@@ -1,0 +1,532 @@
+{
+  "input": {
+    "birth_date": "1998-11-23",
+    "birth_time": "08:30",
+    "city": "Konya, Turkey",
+    "timezone": "Europe/Istanbul",
+    "utc_time": "1998-11-23T06:30:00+00:00",
+    "julian_day": 2451140.770833
+  },
+  "location": {
+    "latitude": 37.872734,
+    "longitude": 32.4924376,
+    "address": "Konya, Selçuklu, Konya, Central Anatolia Region, 42200, Turkey"
+  },
+  "planets": {
+    "Sun": {
+      "sign": "Yay",
+      "sign_index": 8,
+      "longitude": 240.755079,
+      "degree_in_sign": 0.7551,
+      "dms": {
+        "degrees": 0,
+        "minutes": 45,
+        "seconds": 18.28
+      },
+      "speed": 1.010826,
+      "retrograde": false,
+      "latitude": 0.000102,
+      "house": 11
+    },
+    "Moon": {
+      "sign": "Oğlak",
+      "sign_index": 9,
+      "longitude": 286.30224,
+      "degree_in_sign": 16.3022,
+      "dms": {
+        "degrees": 16,
+        "minutes": 18,
+        "seconds": 8.06
+      },
+      "speed": 12.431019,
+      "retrograde": false,
+      "latitude": 3.209335,
+      "house": 1
+    },
+    "Mercury": {
+      "sign": "Yay",
+      "sign_index": 8,
+      "longitude": 257.296331,
+      "degree_in_sign": 17.2963,
+      "dms": {
+        "degrees": 17,
+        "minutes": 17,
+        "seconds": 46.79
+      },
+      "speed": -0.297342,
+      "retrograde": true,
+      "latitude": -1.4584,
+      "house": 12
+    },
+    "Venus": {
+      "sign": "Yay",
+      "sign_index": 8,
+      "longitude": 246.769975,
+      "degree_in_sign": 6.77,
+      "dms": {
+        "degrees": 6,
+        "minutes": 46,
+        "seconds": 11.91
+      },
+      "speed": 1.255749,
+      "retrograde": false,
+      "latitude": 0.043033,
+      "house": 12
+    },
+    "Mars": {
+      "sign": "Başak",
+      "sign_index": 5,
+      "longitude": 177.658071,
+      "degree_in_sign": 27.6581,
+      "dms": {
+        "degrees": 27,
+        "minutes": 39,
+        "seconds": 29.06
+      },
+      "speed": 0.566781,
+      "retrograde": false,
+      "latitude": 1.646824,
+      "house": 9
+    },
+    "Jupiter": {
+      "sign": "Balık",
+      "sign_index": 11,
+      "longitude": 348.324501,
+      "degree_in_sign": 18.3245,
+      "dms": {
+        "degrees": 18,
+        "minutes": 19,
+        "seconds": 28.2
+      },
+      "speed": 0.033482,
+      "retrograde": false,
+      "latitude": -1.388702,
+      "house": 3
+    },
+    "Saturn": {
+      "sign": "Koç",
+      "sign_index": 0,
+      "longitude": 27.928186,
+      "degree_in_sign": 27.9282,
+      "dms": {
+        "degrees": 27,
+        "minutes": 55,
+        "seconds": 41.47
+      },
+      "speed": -0.060008,
+      "retrograde": true,
+      "latitude": -2.710334,
+      "house": 4
+    },
+    "Uranus": {
+      "sign": "Kova",
+      "sign_index": 10,
+      "longitude": 309.337367,
+      "degree_in_sign": 9.3374,
+      "dms": {
+        "degrees": 9,
+        "minutes": 20,
+        "seconds": 14.52
+      },
+      "speed": 0.029276,
+      "retrograde": false,
+      "latitude": -0.644252,
+      "house": 2
+    },
+    "Neptune": {
+      "sign": "Oğlak",
+      "sign_index": 9,
+      "longitude": 299.885397,
+      "degree_in_sign": 29.8854,
+      "dms": {
+        "degrees": 29,
+        "minutes": 53,
+        "seconds": 7.43
+      },
+      "speed": 0.022877,
+      "retrograde": false,
+      "latitude": 0.31048,
+      "house": 2
+    },
+    "Pluto": {
+      "sign": "Yay",
+      "sign_index": 8,
+      "longitude": 247.642813,
+      "degree_in_sign": 7.6428,
+      "dms": {
+        "degrees": 7,
+        "minutes": 38,
+        "seconds": 34.13
+      },
+      "speed": 0.03901,
+      "retrograde": false,
+      "latitude": 11.384954,
+      "house": 12
+    }
+  },
+  "houses": {
+    "house_1": {
+      "sign": "Yay",
+      "sign_index": 8,
+      "longitude": 263.108338,
+      "degree_in_sign": 23.1083,
+      "dms": {
+        "degrees": 23,
+        "minutes": 6,
+        "seconds": 30.02
+      },
+      "house_number": 1
+    },
+    "house_2": {
+      "sign": "Oğlak",
+      "sign_index": 9,
+      "longitude": 298.676328,
+      "degree_in_sign": 28.6763,
+      "dms": {
+        "degrees": 28,
+        "minutes": 40,
+        "seconds": 34.78
+      },
+      "house_number": 2
+    },
+    "house_3": {
+      "sign": "Balık",
+      "sign_index": 11,
+      "longitude": 338.141915,
+      "degree_in_sign": 8.1419,
+      "dms": {
+        "degrees": 8,
+        "minutes": 8,
+        "seconds": 30.89
+      },
+      "house_number": 3
+    },
+    "house_4": {
+      "sign": "Koç",
+      "sign_index": 0,
+      "longitude": 13.068333,
+      "degree_in_sign": 13.0683,
+      "dms": {
+        "degrees": 13,
+        "minutes": 4,
+        "seconds": 6.0
+      },
+      "house_number": 4
+    },
+    "house_5": {
+      "sign": "Boğa",
+      "sign_index": 1,
+      "longitude": 40.443329,
+      "degree_in_sign": 10.4433,
+      "dms": {
+        "degrees": 10,
+        "minutes": 26,
+        "seconds": 35.99
+      },
+      "house_number": 5
+    },
+    "house_6": {
+      "sign": "İkizler",
+      "sign_index": 2,
+      "longitude": 62.692083,
+      "degree_in_sign": 2.6921,
+      "dms": {
+        "degrees": 2,
+        "minutes": 41,
+        "seconds": 31.5
+      },
+      "house_number": 6
+    },
+    "house_7": {
+      "sign": "İkizler",
+      "sign_index": 2,
+      "longitude": 83.108338,
+      "degree_in_sign": 23.1083,
+      "dms": {
+        "degrees": 23,
+        "minutes": 6,
+        "seconds": 30.02
+      },
+      "house_number": 7
+    },
+    "house_8": {
+      "sign": "Yengeç",
+      "sign_index": 3,
+      "longitude": 118.676328,
+      "degree_in_sign": 28.6763,
+      "dms": {
+        "degrees": 28,
+        "minutes": 40,
+        "seconds": 34.78
+      },
+      "house_number": 8
+    },
+    "house_9": {
+      "sign": "Başak",
+      "sign_index": 5,
+      "longitude": 158.141915,
+      "degree_in_sign": 8.1419,
+      "dms": {
+        "degrees": 8,
+        "minutes": 8,
+        "seconds": 30.89
+      },
+      "house_number": 9
+    },
+    "house_10": {
+      "sign": "Terazi",
+      "sign_index": 6,
+      "longitude": 193.068333,
+      "degree_in_sign": 13.0683,
+      "dms": {
+        "degrees": 13,
+        "minutes": 4,
+        "seconds": 6.0
+      },
+      "house_number": 10
+    },
+    "house_11": {
+      "sign": "Akrep",
+      "sign_index": 7,
+      "longitude": 220.443329,
+      "degree_in_sign": 10.4433,
+      "dms": {
+        "degrees": 10,
+        "minutes": 26,
+        "seconds": 35.99
+      },
+      "house_number": 11
+    },
+    "house_12": {
+      "sign": "Yay",
+      "sign_index": 8,
+      "longitude": 242.692083,
+      "degree_in_sign": 2.6921,
+      "dms": {
+        "degrees": 2,
+        "minutes": 41,
+        "seconds": 31.5
+      },
+      "house_number": 12
+    }
+  },
+  "angles": {
+    "ascendant": {
+      "sign": "Yay",
+      "sign_index": 8,
+      "longitude": 263.108338,
+      "degree_in_sign": 23.1083,
+      "dms": {
+        "degrees": 23,
+        "minutes": 6,
+        "seconds": 30.02
+      },
+      "type": "Ascendant"
+    },
+    "midheaven": {
+      "sign": "Terazi",
+      "sign_index": 6,
+      "longitude": 193.068333,
+      "degree_in_sign": 13.0683,
+      "dms": {
+        "degrees": 13,
+        "minutes": 4,
+        "seconds": 6.0
+      },
+      "type": "Midheaven"
+    }
+  },
+  "house_system": "P",
+  "aspects": [
+    {
+      "planet1": "Sun",
+      "planet2": "Moon",
+      "aspect": "Kırkbeşlik",
+      "angle": 45,
+      "actual_angle": 45.5472,
+      "orb": 0.5472,
+      "nature": "minor",
+      "applying": true,
+      "separating": false
+    },
+    {
+      "planet1": "Sun",
+      "planet2": "Venus",
+      "aspect": "Kavuşum",
+      "angle": 0,
+      "actual_angle": 6.0149,
+      "orb": 6.0149,
+      "nature": "major",
+      "applying": true,
+      "separating": false
+    },
+    {
+      "planet1": "Sun",
+      "planet2": "Mars",
+      "aspect": "Altıgen",
+      "angle": 60,
+      "actual_angle": 63.097,
+      "orb": 3.097,
+      "nature": "major",
+      "applying": true,
+      "separating": false
+    },
+    {
+      "planet1": "Sun",
+      "planet2": "Saturn",
+      "aspect": "Yüzelli",
+      "angle": 150,
+      "actual_angle": 147.1731,
+      "orb": 2.8269,
+      "nature": "minor",
+      "applying": true,
+      "separating": false
+    },
+    {
+      "planet1": "Sun",
+      "planet2": "Neptune",
+      "aspect": "Altıgen",
+      "angle": 60,
+      "actual_angle": 59.1303,
+      "orb": 0.8697,
+      "nature": "major",
+      "applying": true,
+      "separating": false
+    },
+    {
+      "planet1": "Sun",
+      "planet2": "Pluto",
+      "aspect": "Kavuşum",
+      "angle": 0,
+      "actual_angle": 6.8877,
+      "orb": 6.8877,
+      "nature": "major",
+      "applying": true,
+      "separating": false
+    },
+    {
+      "planet1": "Moon",
+      "planet2": "Mercury",
+      "aspect": "Otuzluk",
+      "angle": 30,
+      "actual_angle": 29.0059,
+      "orb": 0.9941,
+      "nature": "minor",
+      "applying": true,
+      "separating": false
+    },
+    {
+      "planet1": "Moon",
+      "planet2": "Jupiter",
+      "aspect": "Altıgen",
+      "angle": 60,
+      "actual_angle": 62.0223,
+      "orb": 2.0223,
+      "nature": "major",
+      "applying": true,
+      "separating": false
+    },
+    {
+      "planet1": "Mercury",
+      "planet2": "Jupiter",
+      "aspect": "Kare",
+      "angle": 90,
+      "actual_angle": 91.0282,
+      "orb": 1.0282,
+      "nature": "major",
+      "applying": true,
+      "separating": false
+    },
+    {
+      "planet1": "Venus",
+      "planet2": "Uranus",
+      "aspect": "Altıgen",
+      "angle": 60,
+      "actual_angle": 62.5674,
+      "orb": 2.5674,
+      "nature": "major",
+      "applying": true,
+      "separating": false
+    },
+    {
+      "planet1": "Venus",
+      "planet2": "Pluto",
+      "aspect": "Kavuşum",
+      "angle": 0,
+      "actual_angle": 0.8728,
+      "orb": 0.8728,
+      "nature": "major",
+      "applying": true,
+      "separating": false
+    },
+    {
+      "planet1": "Mars",
+      "planet2": "Saturn",
+      "aspect": "Yüzelli",
+      "angle": 150,
+      "actual_angle": 149.7299,
+      "orb": 0.2701,
+      "nature": "minor",
+      "applying": true,
+      "separating": false
+    },
+    {
+      "planet1": "Mars",
+      "planet2": "Neptune",
+      "aspect": "Üçgen",
+      "angle": 120,
+      "actual_angle": 122.2273,
+      "orb": 2.2273,
+      "nature": "major",
+      "applying": true,
+      "separating": false
+    },
+    {
+      "planet1": "Saturn",
+      "planet2": "Neptune",
+      "aspect": "Kare",
+      "angle": 90,
+      "actual_angle": 88.0428,
+      "orb": 1.9572,
+      "nature": "major",
+      "applying": true,
+      "separating": false
+    },
+    {
+      "planet1": "Uranus",
+      "planet2": "Pluto",
+      "aspect": "Altıgen",
+      "angle": 60,
+      "actual_angle": 61.6946,
+      "orb": 1.6946,
+      "nature": "major",
+      "applying": true,
+      "separating": false
+    }
+  ],
+  "summary": {
+    "sun_sign": "Yay",
+    "moon_sign": "Oğlak",
+    "ascendant_sign": "Yay",
+    "element_distribution": {
+      "Ateş": 5,
+      "Toprak": 3,
+      "Hava": 1,
+      "Su": 1
+    },
+    "sign_distribution": {
+      "Yay": 4,
+      "Oğlak": 2,
+      "Başak": 1,
+      "Balık": 1,
+      "Koç": 1,
+      "Kova": 1
+    },
+    "retrograde_planets": [
+      "Mercury",
+      "Saturn"
+    ],
+    "total_aspects": 15,
+    "major_aspects_count": 11
+  }
+}
