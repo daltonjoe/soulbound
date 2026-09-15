@@ -210,11 +210,15 @@ document.getElementById("new-chart-btn").addEventListener("click", () => {
 
 (function setDefaultDate() {
     const today = new Date();
+    const maxYyyy = today.getFullYear();
+    const maxMm = String(today.getMonth() + 1).padStart(2, "0");
+    const maxDd = String(today.getDate()).padStart(2, "0");
+    document.getElementById("birth_date").max = `${maxYyyy}-${maxMm}-${maxDd}`;
+
     const defaultDate = new Date(today.getFullYear() - 30, 5, 15);
     const yyyy = defaultDate.getFullYear();
     const mm = String(defaultDate.getMonth() + 1).padStart(2, "0");
     const dd = String(defaultDate.getDate()).padStart(2, "0");
-    document.getElementById("birth_date").max = `${yyyy}-${mm}-${dd}`;
     document.getElementById("birth_date").value = `${yyyy}-${mm}-${dd}`;
     document.getElementById("birth_time").value = "12:00";
 })();

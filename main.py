@@ -56,36 +56,65 @@ app.add_middleware(
 
 if os.path.isdir(_STATIC_DIR):
     app.mount("/static", StaticFiles(directory=_STATIC_DIR), name="static")
+    app.mount("/assets", StaticFiles(directory=os.path.join(_STATIC_DIR, "assets")), name="assets")
+    app.mount("/icons", StaticFiles(directory=os.path.join(_STATIC_DIR, "icons")), name="icons")
 
     @app.get("/")
     def root():
         return FileResponse(os.path.join(_STATIC_DIR, "index.html"))
 
-    @app.get("/style.css")
-    def style_css():
-        return FileResponse(os.path.join(_STATIC_DIR, "style.css"),
-                            media_type="text/css")
-
-    @app.get("/app.js")
-    def app_js():
-        return FileResponse(os.path.join(_STATIC_DIR, "app.js"),
-                            media_type="application/javascript")
-
     @app.get("/manifest.json")
     def manifest():
         return FileResponse(os.path.join(_STATIC_DIR, "manifest.json"))
 
-    @app.get("/service-worker.js")
-    def sw():
-        return FileResponse(os.path.join(_STATIC_DIR, "service-worker.js"),
+    @app.get("/favicon.png")
+    def favicon():
+        favicon_path = os.path.join(_STATIC_DIR, "favicon.png")
+        if os.path.isfile(favicon_path):
+            return FileResponse(favicon_path)
+        return FileResponse(os.path.join(_STATIC_DIR, "icons", "Icon-192.png"))
+
+    @app.get("/flutter_bootstrap.js")
+    def flutter_bootstrap():
+        return FileResponse(os.path.join(_STATIC_DIR, "flutter_bootstrap.js"),
                             media_type="application/javascript")
 
-    @app.get("/icon-{size}.png")
-    def icon(size: int):
-        path = os.path.join(_STATIC_DIR, f"icon-{size}.png")
-        if os.path.isfile(path):
-            return FileResponse(path)
-        return FileResponse(os.path.join(_STATIC_DIR, "icon-192.png"))
+    @app.get("/flutter.js")
+    def flutter_js():
+        return FileResponse(os.path.join(_STATIC_DIR, "flutter.js"),
+                            media_type="application/javascript")
+
+    @app.get("/main.dart.js")
+    def main_dart_js():
+        return FileResponse(os.path.join(_STATIC_DIR, "main.dart.js"),
+                            media_type="application/javascript")
+
+    @app.get("/version.json")
+    def version_json():
+        vpath = os.path.join(_STATIC_DIR, "version.json")
+        if os.path.isfile(vpath):
+            return FileResponse(vpath, media_type="application/json")
+        return {"app": "soulbound", "version": "1.0.0"}
+
+    @app.get("/canvaskit/{file_name:path}")
+    def canvaskit_files(file_name: str):
+        ck_dir = os.path.join(_STATIC_DIR, "canvaskit")
+        fpath = os.path.join(ck_dir, file_name)
+        if os.path.isfile(fpath):
+            ext = os.path.splitext(fpath)[1].lower()
+            if ext == ".js":
+                return FileResponse(fpath, media_type="application/javascript")
+            if ext == ".wasm":
+                return FileResponse(fpath, media_type="application/wasm")
+            return FileResponse(fpath)
+        return JSONResponse(status_code=404, content={"error": "Not found"})
+
+    @app.get("/assets/{file_name:path}")
+    def assets_route(file_name: str):
+        fpath = os.path.join(_STATIC_DIR, "assets", file_name)
+        if os.path.isfile(fpath):
+            return FileResponse(fpath)
+        return JSONResponse(status_code=404, content={"error": "Asset not found"})
 
 VALID_PLANETS = {
     "Sun", "Moon", "Mercury", "Venus", "Mars",

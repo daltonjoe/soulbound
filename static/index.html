@@ -1,115 +1,46 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="SoulBound Astro">
-    <link rel="manifest" href="/manifest.json">
-    <link rel="apple-touch-icon" href="/icon-192.png">
-    <link rel="stylesheet" href="/style.css">
-    <title>SoulBound Astro - Doğum Haritan</title>
+  <!--
+    If you are serving your web app in a path other than the root, change the
+    href value below to reflect the base path you are serving from.
+
+    The path provided below has to start and end with a slash "/" in order for
+    it to work correctly.
+
+    For more details:
+    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
+
+    This is a placeholder for base href that will be replaced by the value of
+    the `--base-href` argument provided to `flutter build`.
+  -->
+  <base href="/">
+
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="description" content="SoulBound Astro - Doğum Haritası & Astroloji Raporu">
+
+  <!-- iOS meta tags & icons -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="SoulBound">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="favicon.png"/>
+
+  <title>SoulBound Astro</title>
+  <link rel="manifest" href="manifest.json">
 </head>
 <body>
-    <div class="container">
-        <header class="header">
-            <h1 class="logo">✦ SoulBound ✦</h1>
-            <p class="subtitle">Doğum Haritası & Astroloji Raporu</p>
-        </header>
+  <!--
+    You can customize the "flutter_bootstrap.js" script.
+    This is useful to provide a custom configuration to the Flutter loader
+    or to give the user feedback during the initialization process.
 
-        <div id="form-section" class="card">
-            <form id="chart-form">
-                <div class="form-group">
-                    <label for="birth_date">📅 Doğum Tarihi</label>
-                    <input type="date" id="birth_date" name="birth_date" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="birth_time">⏰ Doğum Saati</label>
-                    <input type="time" id="birth_time" name="birth_time" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="city">📍 Doğum Yeri (Şehir)</label>
-                    <input type="text" id="city" name="city" placeholder="Örn: İstanbul" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="locale">🌍 Dil</label>
-                    <select id="locale" name="locale">
-                        <option value="tr">Türkçe</option>
-                        <option value="en">English</option>
-                        <option value="ar">العربية</option>
-                        <option value="de">Deutsch</option>
-                        <option value="es">Español</option>
-                        <option value="fr">Français</option>
-                        <option value="pt">Português</option>
-                    </select>
-                </div>
-
-                <div class="form-group checkbox-group">
-                    <input type="checkbox" id="include_report" name="include_report">
-                    <label for="include_report">✨ AI Destekli Detaylı Rapor (daha uzun sürer)</label>
-                </div>
-
-                <button type="submit" id="submit-btn" class="btn-primary">
-                    🌟 Haritamı Göster
-                </button>
-            </form>
-        </div>
-
-        <div id="loading-section" class="card hidden">
-            <div class="loader"></div>
-            <p id="loading-text">Haritan hazırlanıyor...</p>
-        </div>
-
-        <div id="result-section" class="hidden">
-            <div class="card">
-                <div class="result-header">
-                    <h2>📊 Haritan</h2>
-                    <button id="new-chart-btn" class="btn-secondary">Yeni Harita</button>
-                </div>
-                <div id="summary" class="summary-box"></div>
-            </div>
-
-            <div class="card">
-                <h3>🪐 Gezegen Konumları</h3>
-                <div id="planets" class="planets-grid"></div>
-            </div>
-
-            <div class="card">
-                <h3>📐 Açılar (Aspects)</h3>
-                <div id="aspects" class="aspects-list"></div>
-            </div>
-
-            <div id="angles-card" class="card">
-                <h3>🎯 Açılar (Angles)</h3>
-                <div id="angles" class="angles-grid"></div>
-            </div>
-
-            <div id="report-card" class="card hidden">
-                <h3>📖 Astroloji Raporu</h3>
-                <div id="ai_report" class="report-box"></div>
-            </div>
-
-            <div id="error-card" class="card error-card hidden">
-                <h3>❌ Hata</h3>
-                <p id="error-message"></p>
-                <p id="error-suggestion" class="suggestion"></p>
-            </div>
-        </div>
-
-        <footer class="footer">
-            <p>SoulBound Astro © 2025</p>
-        </footer>
-    </div>
-
-    <script src="/app.js"></script>
-    <script>
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/service-worker.js').catch(() => {});
-        }
-    </script>
+    For more details:
+    * https://docs.flutter.dev/platform-integration/web/initialization
+  -->
+  <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>

@@ -20,7 +20,6 @@ COPY module1_engine/ /app/module1_engine/
 COPY astro_integration/ /app/astro_integration/
 COPY static/ /app/static/
 COPY main.py /app/
-COPY .env /app/.env
 
 EXPOSE 8080 7860
 
