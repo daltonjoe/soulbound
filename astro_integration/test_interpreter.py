@@ -22,7 +22,7 @@ def test_full_flow():
         chart_data = json.load(f)
 
     # 2. API Key (Buraya kendi key'ini yapıştır veya .env'den çek)
-    API_KEY = "AIzaSyCH97_3JkEv2dEz-DmnCUQ3qKAk0CD9i2E" 
+    API_KEY = os.environ.get("GEMINI_API_KEY", "")
     
     # 3. Interpreter'ı başlat ve yorum al
     print("🔮 Harita yorumlanıyor, lütfen bekleyin...")

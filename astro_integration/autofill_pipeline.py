@@ -30,7 +30,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(me
 log = logging.getLogger(__name__)
 
 # ── API Anahtarları ──────────────────────────────────────────────────────────
-FREE_ASTRO_KEY  = os.getenv("FREE_ASTRO_API_KEY",  "Jky6DTfaPF8VnwjoO7L4K2zf1MqQedFDNANtH7la")
+FREE_ASTRO_KEY  = os.getenv("FREE_ASTRO_API_KEY",  "")
 ANTHROPIC_KEY   = os.getenv("ANTHROPIC_API_KEY",   "")
 FREE_ASTRO_BASE = "https://json.freeastrologyapi.com"
 

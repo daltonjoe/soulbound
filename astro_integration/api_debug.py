@@ -4,10 +4,11 @@ api_debug.py — FreeAstrologyAPI auth sorununu çöz
 Çalıştır:
     python api_debug.py
 """
+import os
 import httpx
 import json
 
-API_KEY = "Jky6DTfaPF8VnwjoO7L4K2zf1MqQedFDNANtH7la"
+API_KEY = os.getenv("FREE_ASTRO_API_KEY", "")
 BASE    = "https://json.freeastrologyapi.com"
 
 # Test body (minimal, gerçek değerler)
