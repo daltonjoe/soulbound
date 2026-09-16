@@ -15,13 +15,14 @@ from slowapi import Limiter
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
-from fastapi import Request, FastAPI, Depends
+from fastapi import Request, FastAPI, Depends, Response
 from fastapi.responses import JSONResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from dotenv import load_dotenv
 from typing import Optional, Any
+import json as _json
 
 from astro_integration.core.planet_interpreter import generate_planet_report
 from astro_integration.core.forecast_service import generate_forecast, VALID_TYPES
@@ -46,6 +47,40 @@ app = FastAPI(title="SoulBound Astro API", version="1.0.0")
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, custom_rate_limit_handler)
 app.add_middleware(SlowAPIMiddleware)
+
+
+class UTF8JSONResponse(JSONResponse):
+    """
+    Özel JSONResponse:
+      - ensure_ascii=False → Türkçe karakterler doğrudan UTF-8 byte olarak yazar
+      - media_type'da charset=utf-8 belirtir → istemcinin doğru decode etmesini garanti eder
+    """
+    media_type = "application/json; charset=utf-8"
+
+    def render(self, content: Any) -> bytes:
+        return _json.dumps(
+            content,
+            ensure_ascii=False,
+            allow_nan=False,
+            indent=None,
+            separators=(",", ":"),
+        ).encode("utf-8")
+
+
+@app.middleware("http")
+async def enforce_utf8_charset(request: Request, call_next):
+    """
+    Tüm JSON cevaplarında charset=utf-8 olduğundan emin olur.
+    Ayrıca cevap gövdesinde U+FFFD (�) olup olmadığını loglar.
+    """
+    response = await call_next(request)
+    ctype = response.headers.get("content-type", "")
+    if "application/json" in ctype and "charset" not in ctype:
+        response.headers["content-type"] = "application/json; charset=utf-8"
+    if "text/" in ctype and "charset" not in ctype:
+        if "charset" not in ctype.lower():
+            response.headers["content-type"] = ctype + "; charset=utf-8"
+    return response
 
 app.add_middleware(
     CORSMiddleware,
@@ -88,6 +123,13 @@ if os.path.isdir(_STATIC_DIR):
     def main_dart_js():
         return FileResponse(os.path.join(_STATIC_DIR, "main.dart.js"),
                             media_type="application/javascript")
+
+    @app.get("/flutter_service_worker.js")
+    def flutter_service_worker():
+        fpath = os.path.join(_STATIC_DIR, "flutter_service_worker.js")
+        if os.path.isfile(fpath):
+            return FileResponse(fpath, media_type="application/javascript")
+        return JSONResponse(status_code=404, content={"error": "Not found"})
 
     @app.get("/version.json")
     def version_json():
@@ -180,100 +222,104 @@ def get_app_token():
 @limiter.limit("30/minute")
 def generate_natal_chart(request: Request, payload: NatalChartRequest):
     gemini_key = os.getenv("GEMINI_API_KEY", "")
-    return generate_chart_service(
+    result = generate_chart_service(
         birth_date=payload.birth_date,
         birth_time=payload.birth_time,
         city=payload.city,
-        locale=payload.locale,         # ← passed through
+        locale=payload.locale,
         gemini_api_key=gemini_key,
         include_report=payload.include_report,
         latitude=payload.latitude,
         longitude=payload.longitude,
         timezone=payload.timezone,
     )
+    return UTF8JSONResponse(content=result)
 
-
-# ─── Astro Report ─────────────────────────────────────────────────────────────
 
 @app.post("/generateAstroReport", dependencies=[Depends(verify_token)])
 @limiter.limit("5/minute")
 def generate_astro_report(request: Request, payload: AstroReportRequest):
     gemini_key = os.getenv("GEMINI_API_KEY", "")
-    return generate_chart_service(
+    result = generate_chart_service(
         birth_date=payload.birth_date,
         birth_time=payload.birth_time,
         city=payload.city,
-        locale=payload.locale,         # ← passed through
+        locale=payload.locale,
         latitude=payload.latitude,
         longitude=payload.longitude,
         timezone=payload.timezone,
         gemini_api_key=gemini_key,
         include_report=True,
     )
+    return UTF8JSONResponse(content=result)
 
-
-# ─── Planet Report ────────────────────────────────────────────────────────────
 
 @app.post("/generatePlanetReport", dependencies=[Depends(verify_token)])
 @limiter.limit("10/minute")
 def generate_planet_report_endpoint(request: Request, payload: PlanetReportRequest):
     if payload.planet_name not in VALID_PLANETS:
-        return {
+        return UTF8JSONResponse(content={
             "status": "error",
             "error_code": "INVALID_PLANET",
             "message": f"Invalid planet: {payload.planet_name}",
-        }
+        })
     gemini_key = os.getenv("GEMINI_API_KEY", "")
     if not gemini_key:
-        return {"status": "error", "error_code": "NO_API_KEY",
-                "message": "Gemini API key not set."}
+        return UTF8JSONResponse(content={
+            "status": "error", "error_code": "NO_API_KEY",
+            "message": "Gemini API key not set.",
+        })
 
     report = generate_planet_report(
         planet_name=payload.planet_name,
         chart_data=payload.chart_data,
         gemini_api_key=gemini_key,
-        locale=payload.locale,         # ← passed through
+        locale=payload.locale,
     )
     if not report:
-        return {"status": "error", "error_code": "AI_ERROR",
-                "message": "Report could not be generated."}
+        return UTF8JSONResponse(content={
+            "status": "error", "error_code": "AI_ERROR",
+            "message": "Report could not be generated.",
+        })
 
-    return {
+    return UTF8JSONResponse(content={
         "status": "success",
         "planet_name": payload.planet_name,
         "report": report,
-    }
+    })
 
-
-# ─── Forecast ─────────────────────────────────────────────────────────────────
 
 @app.post("/forecast-analysis", dependencies=[Depends(verify_token)])
 @limiter.limit("10/minute")
 def forecast_analysis(request: Request, payload: ForecastRequest):
     if payload.analysis_type not in VALID_TYPES:
-        return {
+        return UTF8JSONResponse(content={
             "status": "error",
             "error_code": "INVALID_TYPE",
             "message": f"Invalid analysis type. Valid: {list(VALID_TYPES)}",
-        }
+        })
     gemini_key = os.getenv("GEMINI_API_KEY", "")
     if not gemini_key:
-        return {"status": "error", "error_code": "NO_API_KEY",
-                "message": "Gemini API key not set."}
+        return UTF8JSONResponse(content={
+            "status": "error", "error_code": "NO_API_KEY",
+            "message": "Gemini API key not set.",
+        })
 
     report = generate_forecast(
         analysis_type=payload.analysis_type,
         chart_data=payload.chart_data,
         gemini_api_key=gemini_key,
-        locale=payload.locale,         # ← passed through
+        locale=payload.locale,
     )
     if not report:
-        return {"status": "error", "error_code": "AI_ERROR",
-                "message": "Forecast could not be generated."}
+        return UTF8JSONResponse(content={
+            "status": "error", "error_code": "AI_ERROR",
+            "message": "Forecast could not be generated.",
+        })
 
-    return {
+    return UTF8JSONResponse(content={
         "status": "success",
         "analysis_type": payload.analysis_type,
         "period_label": get_period_label(payload.analysis_type, payload.locale),
         "report": report,
-    }
+    })

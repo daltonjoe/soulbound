@@ -12,6 +12,7 @@ Changes from original:
 from __future__ import annotations
 
 from typing import Optional
+import json
 import requests
 from datetime import datetime, date
 
@@ -126,7 +127,7 @@ def generate_forecast(
 
     url = (
         "https://generativelanguage.googleapis.com/v1beta/models/"
-        f"gemini-2.5-flash:generateContent?key={gemini_api_key}"
+        f"gemini-3.6-flash:generateContent?key={gemini_api_key}"
     )
 
     payload = {
@@ -141,16 +142,28 @@ def generate_forecast(
     try:
         response = requests.post(
             url, json=payload,
-            headers={"Content-Type": "application/json"},
+            headers={"Content-Type": "application/json; charset=utf-8"},
             timeout=120,
         )
         if response.status_code != 200:
             print(f"[forecast] Gemini error: {response.status_code}")
             return None
-        result = response.json()
+        response.encoding = "utf-8"
+        try:
+            result = json.loads(response.content.decode("utf-8"))
+        except Exception:
+            result = response.json()
         candidates = result.get("candidates", [])
         if candidates:
-            return candidates[0]["content"]["parts"][0]["text"]
+            _text = candidates[0]["content"]["parts"][0]["text"]
+            _rep = _text.count("\ufffd")
+            if _rep:
+                print(f"[forecast] ⚠️  {_rep} U+FFFD bulundu, onarım deneniyor...")
+                try:
+                    _text = _text.encode("latin-1").decode("utf-8")
+                except Exception:
+                    pass
+            return _text
         return None
     except Exception as e:
         print(f"[forecast error] {e}")

@@ -206,13 +206,16 @@ def generate_chart_service(
 
     # ── 5. AI report (optional) ──────────────────────────────────────────────
     ai_report = None
+    ai_error = None
     if include_report and gemini_api_key:
         try:
             interpreter = AstroInterpreter(gemini_api_key)
-            # locale is now passed through to Gemini
             ai_report = interpreter.generate_report(full_chart, locale=locale)
-        except Exception:
-            ai_report = None
+            if not ai_report:
+                ai_error = "AI report could not be generated. Check API key or quota."
+        except Exception as _err:
+            print(f"[service] AI report error: {type(_err).__name__}: {_err}")
+            ai_error = f"{type(_err).__name__}: {_err}"
 
     # ── 6. Response ──────────────────────────────────────────────────────────
     result = {
@@ -231,6 +234,8 @@ def generate_chart_service(
         "angles": full_chart["angles"],
         "ai_report": ai_report,
     }
+    if ai_error:
+        result["ai_error"] = ai_error
 
     # Sadece chart verisi cache'lenir (AI raporu hariç, include_report=False ise)
     if _redis and not include_report:
