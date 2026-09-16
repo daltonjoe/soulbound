@@ -1,7 +1,8 @@
 {
     "name": "SoulBound Astro",
     "short_name": "SoulBound",
-    "start_url": ".",
+    "start_url": "/",
+    "scope": "/",
     "display": "standalone",
     "background_color": "#0f0a1e",
     "theme_color": "#6366f1",

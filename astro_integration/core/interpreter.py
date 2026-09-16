@@ -22,7 +22,7 @@ class AstroInterpreter:
         self.api_key = api_key
         self.url = (
             "https://generativelanguage.googleapis.com/v1beta/models/"
-            f"gemini-2.5-flash:generateContent?key={self.api_key}"
+            f"gemini-3.6-flash:generateContent?key={self.api_key}"
         )
 
     def generate_report(
@@ -48,9 +48,10 @@ class AstroInterpreter:
             "contents": [{"parts": [{"text": combined_prompt}]}],
             "generationConfig": {
                 "temperature": 0.8,
-                "maxOutputTokens": 12000,
+                "maxOutputTokens": 8000,
                 "topP": 0.95,
                 "candidateCount": 1,
+                "responseModalities": ["TEXT"],
             },
         }
 
@@ -58,16 +59,34 @@ class AstroInterpreter:
             response = requests.post(
                 self.url,
                 json=payload,
-                headers={"Content-Type": "application/json"},
+                headers={"Content-Type": "application/json; charset=utf-8"},
                 timeout=120,
             )
             if response.status_code != 200:
-                print(f"[interpreter] Gemini error: {response.status_code} — {response.text[:200]}")
+                try:
+                    _err_body = response.content.decode("utf-8", errors="replace")
+                except Exception:
+                    _err_body = str(response.content)
+                print(f"[interpreter] Gemini error: {response.status_code} — {_err_body[:200]}")
                 return None
 
-            result = response.json()
+            response.encoding = "utf-8"
+            try:
+                result = json.loads(response.content.decode("utf-8"))
+            except Exception:
+                result = response.json()
+
             if result.get("candidates"):
-                return result["candidates"][0]["content"]["parts"][0]["text"]
+                _text = result["candidates"][0]["content"]["parts"][0]["text"]
+                _rep = _text.count("\ufffd")
+                if _rep:
+                    print(f"[interpreter] ⚠️  {_rep} adet U+FFFD karakteri bulundu, yeniden encode deneniyor...")
+                    try:
+                        _text = _text.encode("latin-1").decode("utf-8")
+                        print(f"[interpreter] ✅ Latin-1 -> UTF-8 onarım başarılı")
+                    except Exception:
+                        pass
+                return _text
             return None
 
         except requests.exceptions.RequestException as e:

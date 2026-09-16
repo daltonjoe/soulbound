@@ -111,7 +111,7 @@ def generate_planet_report(
 ) -> Optional[str]:
     url = (
         "https://generativelanguage.googleapis.com/v1beta/models/"
-        f"gemini-2.5-flash:generateContent?key={gemini_api_key}"
+        f"gemini-3.6-flash:generateContent?key={gemini_api_key}"
     )
 
     prompt = build_planet_prompt(planet_name, chart_data, locale)
@@ -128,16 +128,28 @@ def generate_planet_report(
     try:
         response = requests.post(
             url, json=payload,
-            headers={"Content-Type": "application/json"},
+            headers={"Content-Type": "application/json; charset=utf-8"},
             timeout=90,
         )
         if response.status_code != 200:
             print(f"[planet_interpreter] Gemini error: {response.status_code}")
             return None
-        result = response.json()
+        response.encoding = "utf-8"
+        try:
+            result = json.loads(response.content.decode("utf-8"))
+        except Exception:
+            result = response.json()
         candidates = result.get("candidates", [])
         if candidates:
-            return candidates[0]["content"]["parts"][0]["text"]
+            _text = candidates[0]["content"]["parts"][0]["text"]
+            _rep = _text.count("\ufffd")
+            if _rep:
+                print(f"[planet_interpreter] ⚠️  {_rep} U+FFFD bulundu, onarım deneniyor...")
+                try:
+                    _text = _text.encode("latin-1").decode("utf-8")
+                except Exception:
+                    pass
+            return _text
         return None
     except Exception as e:
         print(f"[planet_interpreter error] {e}")
