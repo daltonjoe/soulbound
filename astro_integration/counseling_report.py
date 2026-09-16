@@ -1,4 +1,4 @@
-import json
+﻿import json
 import os
 import sys
 import requests
@@ -107,7 +107,7 @@ def generate_counseling_report():
         chart_data = json.load(f)
 
     # 2. API Key - .env'den veya buraya direkt yaz
-    API_KEY = os.environ.get("GEMINI_API_KEY", "AIzaSyCH97_3JkEv2dEz-DmnCUQ3qKAk0CD9i2E")
+    API_KEY = os.environ.get("GEMINI_API_KEY", "")
 
     # 3. Harita verisini prompt'a ekle
     chart_json_str = json.dumps(chart_data, ensure_ascii=False, indent=2)
