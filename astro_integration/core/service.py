@@ -232,6 +232,7 @@ def generate_chart_service(
         "planets": full_chart["planets"],
         "aspects": full_chart["aspects"],
         "angles": full_chart["angles"],
+        "houses": full_chart["houses"],
         "ai_report": ai_report,
     }
     if ai_error:
