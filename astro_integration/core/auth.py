@@ -4,7 +4,7 @@ from __future__ import annotations
 import os 
 from datetime import datetime, timedelta 
  
-from fastapi import HTTPException, Security, status 
+from fastapi import HTTPException, Security, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials 
 from jose import JWTError, jwt 
  
@@ -35,4 +35,22 @@ def verify_token(
             status_code=status.HTTP_401_UNAUTHORIZED, 
             detail="Geçersiz veya süresi dolmuş token.", 
             headers={"WWW-Authenticate": "Bearer"}, 
+        )
+
+
+def get_user_id(
+    credentials: HTTPAuthorizationCredentials = Security(security),
+) -> str:
+    """Return the authenticated Supabase user's UUID from the JWT subject."""
+    try:
+        payload = jwt.decode(credentials.credentials, _SECRET, algorithms=[_ALGORITHM])
+        user_id = payload.get("sub")
+        if not user_id:
+            raise JWTError("JWT subject is missing")
+        return user_id
+    except JWTError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Geçersiz veya süresi dolmuş token.",
+            headers={"WWW-Authenticate": "Bearer"},
         )

@@ -15,19 +15,23 @@ from slowapi import Limiter
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
-from fastapi import Request, FastAPI, Depends, Response
+from fastapi import Request, FastAPI, Depends, Response, HTTPException, status
 from fastapi.responses import JSONResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from dotenv import load_dotenv
 from typing import Optional, Any
+from datetime import datetime
+from uuid import UUID
+import requests
 import json as _json
 
 from astro_integration.core.planet_interpreter import generate_planet_report
 from astro_integration.core.forecast_service import generate_forecast, VALID_TYPES
 from astro_integration.core.prompt_loader import get_period_label
-from astro_integration.core.auth import verify_token, create_app_token
+from astro_integration.core.auth import verify_token, get_user_id, create_app_token
+from module1_engine.transit_engine import compute_daily_events
 
 load_dotenv()
 
@@ -199,6 +203,11 @@ class ForecastRequest(BaseModel):
     locale: str = "tr"            # ← new
 
 
+class DailyEventsRequest(BaseModel):
+    profile_id: UUID
+    date: str
+
+
 # ─── Health Check ─────────────────────────────────────────────────────────────
 
 @app.get("/health")
@@ -322,4 +331,94 @@ def forecast_analysis(request: Request, payload: ForecastRequest):
         "analysis_type": payload.analysis_type,
         "period_label": get_period_label(payload.analysis_type, payload.locale),
         "report": report,
+    })
+
+
+def _supabase_get(table: str, params: dict, access_token: str) -> list:
+    supabase_url = os.getenv("SUPABASE_URL", "").rstrip("/")
+    anon_key = os.getenv("SUPABASE_ANON_KEY", "")
+    if not supabase_url or not anon_key:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Supabase yapılandırması eksik.",
+        )
+
+    response = requests.get(
+        f"{supabase_url}/rest/v1/{table}",
+        params=params,
+        headers={
+            "apikey": anon_key,
+            "Authorization": f"Bearer {access_token}",
+        },
+        timeout=10,
+    )
+    if not response.ok:
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail="Supabase sorgusu başarısız.",
+        )
+    return response.json()
+
+
+@app.post("/daily-events")
+@limiter.limit("30/minute")
+def daily_events(
+    request: Request,
+    payload: DailyEventsRequest,
+    user_id: str = Depends(get_user_id),
+):
+    try:
+        event_date = datetime.strptime(payload.date, "%Y-%m-%d").date()
+    except ValueError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="date must use YYYY-MM-DD format.",
+        )
+    if event_date.isoformat() != payload.date:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="date must use YYYY-MM-DD format.",
+        )
+
+    credentials = request.headers.get("Authorization", "")
+    access_token = credentials[7:].strip() if credentials.startswith("Bearer ") else ""
+    profiles = _supabase_get(
+        "user_profiles",
+        {
+            "select": "id,user_id,birth_time_known",
+            "id": f"eq.{payload.profile_id}",
+        },
+        access_token,
+    )
+    if not profiles:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Profile not found.",
+        )
+    if str(profiles[0].get("user_id")) != user_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Profile does not belong to the authenticated user.",
+        )
+
+    placements = _supabase_get(
+        "user_chart_placements",
+        {
+            "select": "planet_id,longitude_degree",
+            "profile_id": f"eq.{payload.profile_id}",
+        },
+        access_token,
+    )
+    natal_lons = {
+        int(row["planet_id"]): float(row["longitude_degree"])
+        for row in placements
+        if row.get("planet_id") is not None
+        and row.get("longitude_degree") is not None
+        and 1 <= int(row["planet_id"]) <= 10
+    }
+    events = compute_daily_events(natal_lons, event_date, tz_name="UTC", top_n=5)
+    return UTF8JSONResponse(content={
+        "date": payload.date,
+        "engine_version": "transit-v1",
+        "events": events,
     })

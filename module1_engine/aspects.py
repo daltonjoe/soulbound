@@ -2,7 +2,7 @@ ASPECT_DEFINITIONS = {
     "Kavuşum":    {"angle": 0,   "orb": 8,  "nature": "major"},
     "Karşıtlık":  {"angle": 180, "orb": 8,  "nature": "major"},
     "Üçgen":      {"angle": 120, "orb": 8,  "nature": "major"},
-    "Kare":       {"angle": 90,  "orb": 7,  "nature": "major"},
+    "Kare":       {"angle": 90,  "orb": 8,  "nature": "major"},
     "Altıgen":    {"angle": 60,  "orb": 6,  "nature": "major"},
     "Yüzelli":    {"angle": 150, "orb": 3,  "nature": "minor"},
     "Otuzluk":    {"angle": 30,  "orb": 2,  "nature": "minor"},
@@ -63,6 +63,13 @@ def calculate_aspects(planets: dict, include_minor: bool = True) -> list:
 def is_applying(speed1: float, speed2: float, 
                 lon1: float, lon2: float, target_angle: float) -> bool:
     """Açının oluşmakta mı (applying) yoksa ayrılmakta mı (separating) olduğunu belirler."""
-    current_diff = angular_distance(lon1, lon2)
+    directed_diff = (lon1 - lon2 + 180) % 360 - 180
+    target_angle %= 360
+    target_options = (target_angle, -target_angle)
+    signed_target = min(
+        target_options,
+        key=lambda target: abs(directed_diff - target)
+    )
+    signed_deviation = directed_diff - signed_target
     relative_speed = speed1 - speed2
-    return abs(current_diff - target_angle) > 0 and relative_speed != 0
+    return signed_deviation * relative_speed < 0
