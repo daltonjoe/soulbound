@@ -15,3 +15,7 @@ dist/
 node_modules/
 .pytest_cache/
 .mypy_cache/
+
+diff_output.txt
+test.riv
+supabase/.temp/
