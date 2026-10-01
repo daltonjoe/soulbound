@@ -19,3 +19,5 @@ node_modules/
 diff_output.txt
 test.riv
 supabase/.temp/
+
+test_output.json
