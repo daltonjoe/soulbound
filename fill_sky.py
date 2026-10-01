@@ -131,6 +131,26 @@ def build(start, n_days):
             t = bisect(f, a, b)
             add("full_moon", MOON, t, lon_speed(t, MOON)[0])
 
+    # Tutulmalar: Swiss Ephemeris bir sonraki tutulmayi dogrudan verir.
+    # tret[0] = maksimum an (JD, UT). Pencere: jds[0] .. jds[-1].
+    t = jds[0]
+    while True:
+        _, tret = swe.sol_eclipse_when_glob(t)
+        tmax = tret[0]
+        if tmax > jds[-1]:
+            break
+        add("solar_eclipse", SUN, tmax, lon_speed(tmax, SUN)[0])
+        t = tmax + 1  # ayni tutulmayi tekrar bulmasin
+
+    t = jds[0]
+    while True:
+        _, tret = swe.lun_eclipse_when(t)
+        tmax = tret[0]
+        if tmax > jds[-1]:
+            break
+        add("lunar_eclipse", MOON, tmax, lon_speed(tmax, MOON)[0])
+        t = tmax + 1
+
     return pos_rows, sorted(events.values(), key=lambda r: r["exact_at"])
 
 
