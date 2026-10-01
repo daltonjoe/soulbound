@@ -7,6 +7,7 @@ from fastapi import HTTPException
 from starlette.requests import Request
 
 import main
+from astro_integration.core import auth
 from module1_engine import transit_engine
 
 
@@ -90,3 +91,60 @@ def test_transit_engine_uses_utc_noon_and_orb_scale(monkeypatch):
     assert transit_engine.ORB_SCALE == 0.41
     assert events
     assert captured["jd"] == transit_engine.transit_jd(date(2026, 10, 1), "UTC")
+
+
+def test_get_user_id_uses_supabase_jwks_and_refreshes_unknown_kid(monkeypatch):
+    auth._JWKS_CACHE = None
+    jwks_calls = []
+    responses = []
+
+    class Response:
+        def __init__(self, kid):
+            self.kid = kid
+
+        def raise_for_status(self):
+            return None
+
+        def json(self):
+            return {"keys": [{"kid": self.kid, "kty": "EC"}]}
+
+    monkeypatch.setenv("SUPABASE_URL", "https://example.supabase.co")
+    responses.extend([Response("old-kid"), Response("new-kid")])
+    monkeypatch.setattr(
+        auth.requests,
+        "get",
+        lambda url, timeout: (
+            jwks_calls.append(url),
+            responses.pop(0),
+        )[1],
+    )
+    monkeypatch.setattr(
+        auth.jwt,
+        "get_unverified_header",
+        lambda token: {"alg": "ES256", "kid": "new-kid"},
+    )
+    decoded = {}
+
+    def decode(token, key, **kwargs):
+        decoded.update(key=key, kwargs=kwargs)
+        return {"sub": "user-1"}
+
+    monkeypatch.setattr(auth.jwt, "decode", decode)
+
+    user_id = auth.get_user_id(
+        auth.HTTPAuthorizationCredentials(
+            scheme="Bearer", credentials="supabase-token"
+        )
+    )
+
+    assert user_id == "user-1"
+    assert jwks_calls == [
+        "https://example.supabase.co/auth/v1/.well-known/jwks.json",
+        "https://example.supabase.co/auth/v1/.well-known/jwks.json",
+    ]
+    assert decoded["key"]["kid"] == "new-kid"
+    assert decoded["kwargs"] == {
+        "algorithms": ["ES256"],
+        "audience": "authenticated",
+        "issuer": "https://example.supabase.co/auth/v1",
+    }
