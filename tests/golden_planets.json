@@ -1,0 +1,905 @@
+{
+ "swe_version": "2.10.03",
+ "cases": [
+  {
+   "utc": "1950-03-21T06:30:00",
+   "planets": {
+    "Sun": {
+     "lon": 0.079249,
+     "retro": false
+    },
+    "Moon": {
+     "lon": 28.996634,
+     "retro": false
+    },
+    "Mercury": {
+     "lon": 353.469465,
+     "retro": false
+    },
+    "Venus": {
+     "lon": 315.851057,
+     "retro": false
+    },
+    "Mars": {
+     "lon": 182.798563,
+     "retro": true
+    },
+    "Jupiter": {
+     "lon": 324.940321,
+     "retro": false
+    },
+    "Saturn": {
+     "lon": 164.94785,
+     "retro": true
+    },
+    "Uranus": {
+     "lon": 90.996388,
+     "retro": false
+    },
+    "Neptune": {
+     "lon": 196.426951,
+     "retro": true
+    },
+    "Pluto": {
+     "lon": 136.088567,
+     "retro": true
+    }
+   }
+  },
+  {
+   "utc": "1963-11-22T18:30:00",
+   "planets": {
+    "Sun": {
+     "lon": 239.733775,
+     "retro": false
+    },
+    "Moon": {
+     "lon": 311.241182,
+     "retro": false
+    },
+    "Mercury": {
+     "lon": 249.747321,
+     "retro": false
+    },
+    "Venus": {
+     "lon": 261.448012,
+     "retro": false
+    },
+    "Mars": {
+     "lon": 260.5233,
+     "retro": false
+    },
+    "Jupiter": {
+     "lon": 9.814045,
+     "retro": true
+    },
+    "Saturn": {
+     "lon": 317.314163,
+     "retro": false
+    },
+    "Uranus": {
+     "lon": 159.813426,
+     "retro": false
+    },
+    "Neptune": {
+     "lon": 225.922763,
+     "retro": false
+    },
+    "Pluto": {
+     "lon": 164.066766,
+     "retro": false
+    }
+   }
+  },
+  {
+   "utc": "1969-07-20T20:17:00",
+   "planets": {
+    "Sun": {
+     "lon": 117.910743,
+     "retro": false
+    },
+    "Moon": {
+     "lon": 187.873761,
+     "retro": false
+    },
+    "Mercury": {
+     "lon": 115.842911,
+     "retro": false
+    },
+    "Venus": {
+     "lon": 75.037422,
+     "retro": false
+    },
+    "Mars": {
+     "lon": 242.773295,
+     "retro": false
+    },
+    "Jupiter": {
+     "lon": 180.746241,
+     "retro": false
+    },
+    "Saturn": {
+     "lon": 38.097998,
+     "retro": false
+    },
+    "Uranus": {
+     "lon": 180.690021,
+     "retro": false
+    },
+    "Neptune": {
+     "lon": 236.022925,
+     "retro": true
+    },
+    "Pluto": {
+     "lon": 173.007183,
+     "retro": false
+    }
+   }
+  },
+  {
+   "utc": "1975-01-01T00:00:00",
+   "planets": {
+    "Sun": {
+     "lon": 279.934546,
+     "retro": false
+    },
+    "Moon": {
+     "lon": 139.188341,
+     "retro": false
+    },
+    "Mercury": {
+     "lon": 287.043471,
+     "retro": false
+    },
+    "Venus": {
+     "lon": 293.380916,
+     "retro": false
+    },
+    "Mars": {
+     "lon": 254.959273,
+     "retro": false
+    },
+    "Jupiter": {
+     "lon": 343.314869,
+     "retro": false
+    },
+    "Saturn": {
+     "lon": 105.874457,
+     "retro": true
+    },
+    "Uranus": {
+     "lon": 211.877809,
+     "retro": false
+    },
+    "Neptune": {
+     "lon": 250.433412,
+     "retro": false
+    },
+    "Pluto": {
+     "lon": 189.222688,
+     "retro": false
+    }
+   }
+  },
+  {
+   "utc": "1980-06-15T09:45:00",
+   "planets": {
+    "Sun": {
+     "lon": 84.429858,
+     "retro": false
+    },
+    "Moon": {
+     "lon": 116.419341,
+     "retro": false
+    },
+    "Mercury": {
+     "lon": 108.876579,
+     "retro": false
+    },
+    "Venus": {
+     "lon": 84.278213,
+     "retro": true
+    },
+    "Mars": {
+     "lon": 166.719331,
+     "retro": false
+    },
+    "Jupiter": {
+     "lon": 153.76677,
+     "retro": false
+    },
+    "Saturn": {
+     "lon": 170.678658,
+     "retro": false
+    },
+    "Uranus": {
+     "lon": 232.304885,
+     "retro": true
+    },
+    "Neptune": {
+     "lon": 261.212904,
+     "retro": true
+    },
+    "Pluto": {
+     "lon": 199.018452,
+     "retro": true
+    }
+   }
+  },
+  {
+   "utc": "1984-02-29T12:00:00",
+   "planets": {
+    "Sun": {
+     "lon": 340.093347,
+     "retro": false
+    },
+    "Moon": {
+     "lon": 315.403427,
+     "retro": false
+    },
+    "Mercury": {
+     "lon": 333.084964,
+     "retro": false
+    },
+    "Venus": {
+     "lon": 312.69566,
+     "retro": false
+    },
+    "Mars": {
+     "lon": 231.705211,
+     "retro": false
+    },
+    "Jupiter": {
+     "lon": 277.761281,
+     "retro": false
+    },
+    "Saturn": {
+     "lon": 226.363521,
+     "retro": true
+    },
+    "Uranus": {
+     "lon": 253.423434,
+     "retro": false
+    },
+    "Neptune": {
+     "lon": 271.120564,
+     "retro": false
+    },
+    "Pluto": {
+     "lon": 211.949993,
+     "retro": true
+    }
+   }
+  },
+  {
+   "utc": "1987-08-17T03:10:00",
+   "planets": {
+    "Sun": {
+     "lon": 143.702316,
+     "retro": false
+    },
+    "Moon": {
+     "lon": 62.674292,
+     "retro": false
+    },
+    "Mercury": {
+     "lon": 140.425526,
+     "retro": false
+    },
+    "Venus": {
+     "lon": 142.016024,
+     "retro": false
+    },
+    "Mars": {
+     "lon": 146.377375,
+     "retro": false
+    },
+    "Jupiter": {
+     "lon": 29.71828,
+     "retro": false
+    },
+    "Saturn": {
+     "lon": 254.53776,
+     "retro": true
+    },
+    "Uranus": {
+     "lon": 262.818753,
+     "retro": true
+    },
+    "Neptune": {
+     "lon": 275.484111,
+     "retro": true
+    },
+    "Pluto": {
+     "lon": 217.40257,
+     "retro": false
+    }
+   }
+  },
+  {
+   "utc": "1990-12-31T23:59:00",
+   "planets": {
+    "Sun": {
+     "lon": 280.054542,
+     "retro": false
+    },
+    "Moon": {
+     "lon": 103.223294,
+     "retro": false
+    },
+    "Mercury": {
+     "lon": 264.312353,
+     "retro": true
+    },
+    "Venus": {
+     "lon": 294.720901,
+     "retro": false
+    },
+    "Mars": {
+     "lon": 57.75504,
+     "retro": true
+    },
+    "Jupiter": {
+     "lon": 131.982462,
+     "retro": true
+    },
+    "Saturn": {
+     "lon": 295.662744,
+     "retro": false
+    },
+    "Uranus": {
+     "lon": 279.729583,
+     "retro": false
+    },
+    "Neptune": {
+     "lon": 284.116818,
+     "retro": false
+    },
+    "Pluto": {
+     "lon": 229.591371,
+     "retro": false
+    }
+   }
+  },
+  {
+   "utc": "1992-05-05T14:20:00",
+   "planets": {
+    "Sun": {
+     "lon": 45.330566,
+     "retro": false
+    },
+    "Moon": {
+     "lon": 81.916673,
+     "retro": false
+    },
+    "Mercury": {
+     "lon": 21.319284,
+     "retro": false
+    },
+    "Venus": {
+     "lon": 34.853108,
+     "retro": false
+    },
+    "Mars": {
+     "lon": 359.76767,
+     "retro": false
+    },
+    "Jupiter": {
+     "lon": 154.667175,
+     "retro": false
+    },
+    "Saturn": {
+     "lon": 318.059392,
+     "retro": false
+    },
+    "Uranus": {
+     "lon": 287.938263,
+     "retro": true
+    },
+    "Neptune": {
+     "lon": 288.895827,
+     "retro": true
+    },
+    "Pluto": {
+     "lon": 231.751814,
+     "retro": true
+    }
+   }
+  },
+  {
+   "utc": "1995-09-09T21:05:00",
+   "planets": {
+    "Sun": {
+     "lon": 166.709764,
+     "retro": false
+    },
+    "Moon": {
+     "lon": 355.972853,
+     "retro": false
+    },
+    "Mercury": {
+     "lon": 193.55461,
+     "retro": false
+    },
+    "Venus": {
+     "lon": 172.136231,
+     "retro": false
+    },
+    "Mars": {
+     "lon": 211.712577,
+     "retro": false
+    },
+    "Jupiter": {
+     "lon": 247.671494,
+     "retro": false
+    },
+    "Saturn": {
+     "lon": 351.704472,
+     "retro": true
+    },
+    "Uranus": {
+     "lon": 296.814671,
+     "retro": true
+    },
+    "Neptune": {
+     "lon": 292.944975,
+     "retro": true
+    },
+    "Pluto": {
+     "lon": 238.10671,
+     "retro": false
+    }
+   }
+  },
+  {
+   "utc": "1999-08-11T10:03:00",
+   "planets": {
+    "Sun": {
+     "lon": 138.309688,
+     "retro": false
+    },
+    "Moon": {
+     "lon": 137.718586,
+     "retro": false
+    },
+    "Mercury": {
+     "lon": 120.13622,
+     "retro": false
+    },
+    "Venus": {
+     "lon": 152.175451,
+     "retro": true
+    },
+    "Mars": {
+     "lon": 226.823035,
+     "retro": false
+    },
+    "Jupiter": {
+     "lon": 34.679135,
+     "retro": false
+    },
+    "Saturn": {
+     "lon": 46.875216,
+     "retro": false
+    },
+    "Uranus": {
+     "lon": 314.67083,
+     "retro": true
+    },
+    "Neptune": {
+     "lon": 302.548064,
+     "retro": true
+    },
+    "Pluto": {
+     "lon": 247.753881,
+     "retro": true
+    }
+   }
+  },
+  {
+   "utc": "2000-01-01T12:00:00",
+   "planets": {
+    "Sun": {
+     "lon": 280.368919,
+     "retro": false
+    },
+    "Moon": {
+     "lon": 223.323751,
+     "retro": false
+    },
+    "Mercury": {
+     "lon": 271.889277,
+     "retro": false
+    },
+    "Venus": {
+     "lon": 241.565788,
+     "retro": false
+    },
+    "Mars": {
+     "lon": 327.963303,
+     "retro": false
+    },
+    "Jupiter": {
+     "lon": 25.253088,
+     "retro": false
+    },
+    "Saturn": {
+     "lon": 40.395663,
+     "retro": true
+    },
+    "Uranus": {
+     "lon": 314.809187,
+     "retro": false
+    },
+    "Neptune": {
+     "lon": 303.193012,
+     "retro": false
+    },
+    "Pluto": {
+     "lon": 251.454777,
+     "retro": false
+    }
+   }
+  },
+  {
+   "utc": "2003-04-18T07:40:00",
+   "planets": {
+    "Sun": {
+     "lon": 27.868348,
+     "retro": false
+    },
+    "Moon": {
+     "lon": 229.24475,
+     "retro": false
+    },
+    "Mercury": {
+     "lon": 47.292588,
+     "retro": false
+    },
+    "Venus": {
+     "lon": 355.942742,
+     "retro": false
+    },
+    "Mars": {
+     "lon": 297.77959,
+     "retro": false
+    },
+    "Jupiter": {
+     "lon": 128.376208,
+     "retro": false
+    },
+    "Saturn": {
+     "lon": 84.787558,
+     "retro": false
+    },
+    "Uranus": {
+     "lon": 331.833947,
+     "retro": false
+    },
+    "Neptune": {
+     "lon": 312.977211,
+     "retro": false
+    },
+    "Pluto": {
+     "lon": 259.768106,
+     "retro": true
+    }
+   }
+  },
+  {
+   "utc": "2008-10-08T16:25:00",
+   "planets": {
+    "Sun": {
+     "lon": 195.759926,
+     "retro": false
+    },
+    "Moon": {
+     "lon": 300.186868,
+     "retro": false
+    },
+    "Mercury": {
+     "lon": 191.912475,
+     "retro": true
+    },
+    "Venus": {
+     "lon": 227.748824,
+     "retro": false
+    },
+    "Mars": {
+     "lon": 213.045052,
+     "retro": false
+    },
+    "Jupiter": {
+     "lon": 283.982963,
+     "retro": false
+    },
+    "Saturn": {
+     "lon": 166.155877,
+     "retro": false
+    },
+    "Uranus": {
+     "lon": 349.696547,
+     "retro": true
+    },
+    "Neptune": {
+     "lon": 321.634302,
+     "retro": true
+    },
+    "Pluto": {
+     "lon": 268.724996,
+     "retro": false
+    }
+   }
+  },
+  {
+   "utc": "2012-12-21T11:11:00",
+   "planets": {
+    "Sun": {
+     "lon": 269.999566,
+     "retro": false
+    },
+    "Moon": {
+     "lon": 14.237498,
+     "retro": false
+    },
+    "Mercury": {
+     "lon": 254.698232,
+     "retro": false
+    },
+    "Venus": {
+     "lon": 246.586142,
+     "retro": false
+    },
+    "Mars": {
+     "lon": 296.42771,
+     "retro": false
+    },
+    "Jupiter": {
+     "lon": 68.900779,
+     "retro": true
+    },
+    "Saturn": {
+     "lon": 218.661038,
+     "retro": false
+    },
+    "Uranus": {
+     "lon": 4.641019,
+     "retro": false
+    },
+    "Neptune": {
+     "lon": 330.813461,
+     "retro": false
+    },
+    "Pluto": {
+     "lon": 278.949404,
+     "retro": false
+    }
+   }
+  },
+  {
+   "utc": "2016-03-08T01:30:00",
+   "planets": {
+    "Sun": {
+     "lon": 347.910926,
+     "retro": false
+    },
+    "Moon": {
+     "lon": 333.876014,
+     "retro": false
+    },
+    "Mercury": {
+     "lon": 334.407577,
+     "retro": false
+    },
+    "Venus": {
+     "lon": 324.592248,
+     "retro": false
+    },
+    "Mars": {
+     "lon": 240.712403,
+     "retro": false
+    },
+    "Jupiter": {
+     "lon": 168.356276,
+     "retro": true
+    },
+    "Saturn": {
+     "lon": 256.154071,
+     "retro": false
+    },
+    "Uranus": {
+     "lon": 18.641272,
+     "retro": false
+    },
+    "Neptune": {
+     "lon": 339.803813,
+     "retro": false
+    },
+    "Pluto": {
+     "lon": 287.060373,
+     "retro": false
+    }
+   }
+  },
+  {
+   "utc": "2019-07-04T13:00:00",
+   "planets": {
+    "Sun": {
+     "lon": 102.284419,
+     "retro": false
+    },
+    "Moon": {
+     "lon": 125.903229,
+     "retro": false
+    },
+    "Mercury": {
+     "lon": 124.00687,
+     "retro": false
+    },
+    "Venus": {
+     "lon": 91.106913,
+     "retro": false
+    },
+    "Mars": {
+     "lon": 121.634905,
+     "retro": false
+    },
+    "Jupiter": {
+     "lon": 256.620732,
+     "retro": true
+    },
+    "Saturn": {
+     "lon": 287.596503,
+     "retro": true
+    },
+    "Uranus": {
+     "lon": 36.017765,
+     "retro": false
+    },
+    "Neptune": {
+     "lon": 348.67931,
+     "retro": true
+    },
+    "Pluto": {
+     "lon": 292.13615,
+     "retro": true
+    }
+   }
+  },
+  {
+   "utc": "2023-11-05T19:45:00",
+   "planets": {
+    "Sun": {
+     "lon": 223.125858,
+     "retro": false
+    },
+    "Moon": {
+     "lon": 138.190108,
+     "retro": false
+    },
+    "Mercury": {
+     "lon": 233.215102,
+     "retro": false
+    },
+    "Venus": {
+     "lon": 177.215526,
+     "retro": false
+    },
+    "Mars": {
+     "lon": 226.905522,
+     "retro": false
+    },
+    "Jupiter": {
+     "lon": 40.153446,
+     "retro": true
+    },
+    "Saturn": {
+     "lon": 330.515642,
+     "retro": false
+    },
+    "Uranus": {
+     "lon": 51.389571,
+     "retro": true
+    },
+    "Neptune": {
+     "lon": 355.146978,
+     "retro": true
+    },
+    "Pluto": {
+     "lon": 298.053525,
+     "retro": false
+    }
+   }
+  },
+  {
+   "utc": "2026-10-03T07:16:00",
+   "planets": {
+    "Sun": {
+     "lon": 190.103337,
+     "retro": false
+    },
+    "Moon": {
+     "lon": 96.724515,
+     "retro": false
+    },
+    "Mercury": {
+     "lon": 213.672731,
+     "retro": false
+    },
+    "Venus": {
+     "lon": 218.491152,
+     "retro": true
+    },
+    "Mars": {
+     "lon": 123.025236,
+     "retro": false
+    },
+    "Jupiter": {
+     "lon": 140.000018,
+     "retro": false
+    },
+    "Saturn": {
+     "lon": 11.39776,
+     "retro": true
+    },
+    "Uranus": {
+     "lon": 65.48548,
+     "retro": true
+    },
+    "Neptune": {
+     "lon": 2.798692,
+     "retro": true
+    },
+    "Pluto": {
+     "lon": 303.107518,
+     "retro": true
+    }
+   }
+  },
+  {
+   "utc": "2030-01-15T08:00:00",
+   "planets": {
+    "Sun": {
+     "lon": 295.211401,
+     "retro": false
+    },
+    "Moon": {
+     "lon": 65.837314,
+     "retro": false
+    },
+    "Mercury": {
+     "lon": 272.528381,
+     "retro": false
+    },
+    "Venus": {
+     "lon": 281.365599,
+     "retro": true
+    },
+    "Mars": {
+     "lon": 325.983302,
+     "retro": false
+    },
+    "Jupiter": {
+     "lon": 232.929219,
+     "retro": false
+    },
+    "Saturn": {
+     "lon": 48.104179,
+     "retro": true
+    },
+    "Uranus": {
+     "lon": 75.075179,
+     "retro": true
+    },
+    "Neptune": {
+     "lon": 8.541771,
+     "retro": false
+    },
+    "Pluto": {
+     "lon": 309.584779,
+     "retro": false
+    }
+   }
+  }
+ ]
+}
