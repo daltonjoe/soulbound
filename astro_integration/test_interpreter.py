@@ -1,6 +1,5 @@
 import json
 import os
-from core.interpreter import AstroInterpreter
 
 import sys
 
