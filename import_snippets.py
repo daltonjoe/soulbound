@@ -25,7 +25,7 @@ MAX_BODY, MAX_NOTIF = 220, 80
 # GEÇİCİ ÖNERİ - onayla ya da değiştir. content_themes.code değerleriyle eşleşmeli.
 THEME_BY_NATAL = {
     "Sun": "identity", "Moon": "identity", "Mercury": "career", "Venus": "love",
-    "Mars": "career", "Jupiter": "career", "Saturn": "career", "Uranus": "identity",
+     "Mars": "health", "Jupiter": "career", "Saturn": "career", "Uranus": "identity",
     "Neptune": "love", "Pluto": "identity",
 }
 
