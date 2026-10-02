@@ -208,7 +208,7 @@ DAILY_LOCALES = {"en", "de", "tr", "fr", "es", "pt", "it"}
 # K5: natal noktaya göre theme_id (1 love, 2 career, 3 identity, 4 health)
 THEME_BY_NATAL = {1: 3, 2: 3, 3: 2, 4: 1, 5: 4, 6: 2, 7: 2, 8: 3, 9: 1, 10: 3}
 # Sabit referans yüzdelik (M1'de ref_distributions'a taşınacak) [?]
-_PCT_POINTS = [(0.0, 0), (0.292, 30), (0.466, 50), (0.612, 70), (0.869, 90), (1.15, 100)]
+_PCT_POINTS = [(0.0, 0), (0.18, 30), (0.255, 50), (0.343, 70), (0.501, 90), (1.15, 100)]
 
 
 def _score_percentile(score):
@@ -517,6 +517,25 @@ def daily_events(
             "text": text,
             "notification": notif,
         }
+    rarity_pct = None
+    try:
+        if headline and headline.get("tag"):
+            tg = headline["tag"]
+            rr = _supabase_get(
+                "ref_event_rates",
+                {
+                    "select": "rate_pct",
+                    "engine_version": "eq.v2",
+                    "transit_body_id": f"eq.{tg['transit']}",
+                    "aspect_type_id": f"eq.{tg['aspect']}",
+                    "natal_body_id": f"eq.{tg['natal']}",
+                },
+                access_token,
+            )
+            if rr:
+                rarity_pct = round(float(rr[0]["rate_pct"]), 2)
+    except Exception:
+        rarity_pct = None
     return UTF8JSONResponse(content={
         "date": payload.date,
         "locale": locale,
@@ -525,5 +544,5 @@ def daily_events(
         "headline": headline,
         "events": events,
         "categories": categories,
-        "rarity": {"event_rate_pct": None},
+        "rarity": {"event_rate_pct": rarity_pct},
     })
