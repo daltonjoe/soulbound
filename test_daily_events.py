@@ -37,7 +37,7 @@ def test_daily_events_schema_and_limit(monkeypatch):
     }
     monkeypatch.setenv("SUPABASE_URL", "https://example.supabase.co")
     monkeypatch.setenv("SUPABASE_ANON_KEY", "anon")
-    monkeypatch.setattr(main, "_supabase_get", lambda table, params, access_token: rows[table])
+    monkeypatch.setattr(main, "_supabase_get", lambda table, params, access_token: rows.get(table, []))
     monkeypatch.setattr(
         main, "compute_daily_events",
         lambda natal_lons, event_date, tz_name, top_n: [
