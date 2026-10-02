@@ -203,10 +203,18 @@ class ForecastRequest(BaseModel):
     locale: str = "tr"            # ← new
 
 
+DAILY_LOCALES = {"en", "de", "tr", "fr", "es", "pt", "it"}
+# K5: natal noktaya göre tema (Mars→health). Kod döner; ID eşlemesi sonra [?]
+THEME_BY_NATAL = {
+    1: "identity", 2: "identity", 3: "career", 4: "love", 5: "health",
+    6: "career", 7: "career", 8: "identity", 9: "love", 10: "identity",
+}
+
+
 class DailyEventsRequest(BaseModel):
     profile_id: UUID
     date: str
-
+    locale: str = "en"
 
 # ─── Health Check ─────────────────────────────────────────────────────────────
 
@@ -416,9 +424,41 @@ def daily_events(
         and row.get("longitude_degree") is not None
         and 1 <= int(row["planet_id"]) <= 10
     }
+    time_known = profiles[0].get("birth_time_known") is not False
+    if not time_known:
+        natal_lons.pop(2, None)  # kural 10: saatsiz profilde natal Ay hedef olamaz
+    locale = payload.locale if payload.locale in DAILY_LOCALES else "en"
     events = compute_daily_events(natal_lons, event_date, tz_name="UTC", top_n=5)
+    tpl_rows = _supabase_get(
+        "snippet_templates",
+        {
+            "select": "id,transit_body_id,aspect_type_id,natal_body_id,variant_no",
+            "kind": "eq.transit_daily",
+            "status": "eq.approved",
+        },
+        access_token,
+    )
+    by_key = {}
+    for r in tpl_rows:
+        k = (r["transit_body_id"], r["aspect_type_id"], r["natal_body_id"])
+        by_key.setdefault(k, []).append(r)
+    
+    for event in events:
+        event["theme"] =  THEME_BY_NATAL.get(event["natal_body_id"])
+        group = sorted(
+            by_key.get(
+                (event["transit_body_id"], event["aspect_type_id"], event["natal_body_id"]),
+                [],
+            ),
+            key=lambda r: r["variant_no"],
+        )
+        event["template_id"] = (
+            group[event_date.toordinal() % len(group)]["id"] if group else None
+        )
     return UTF8JSONResponse(content={
         "date": payload.date,
+        "locale": locale,
+        "time_known": time_known,
         "engine_version": "transit-v1",
         "events": events,
     })
