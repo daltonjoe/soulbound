@@ -205,10 +205,30 @@ class ForecastRequest(BaseModel):
 
 DAILY_LOCALES = {"en", "de", "tr", "fr", "es", "pt", "it"}
 # K5: natal noktaya göre tema (Mars→health). Kod döner; ID eşlemesi sonra [?]
-THEME_BY_NATAL = {
-    1: "identity", 2: "identity", 3: "career", 4: "love", 5: "health",
-    6: "career", 7: "career", 8: "identity", 9: "love", 10: "identity",
-}
+# K5: natal noktaya göre theme_id (1 love, 2 career, 3 identity, 4 health)
+THEME_BY_NATAL = {1: 3, 2: 3, 3: 2, 4: 1, 5: 4, 6: 2, 7: 2, 8: 3, 9: 1, 10: 3}
+# Sabit referans yüzdelik (M1'de ref_distributions'a taşınacak) [?]
+_PCT_POINTS = [(0.0, 0), (0.292, 30), (0.466, 50), (0.612, 70), (0.869, 90), (1.15, 100)]
+
+
+def _score_percentile(score):
+    for (x0, y0), (x1, y1) in zip(_PCT_POINTS, _PCT_POINTS[1:]):
+        if score <= x1:
+            return round(y0 + (y1 - y0) * (score - x0) / (x1 - x0))
+    return 100
+
+
+def _valence(e):
+    a, t, n = e["aspect_type_id"], e["transit_body_id"], e["natal_body_id"]
+    if t == 5 and a in (3, 5) and n in (1, 2, 7, 10):
+        return "trouble"
+    if a in (2, 4):
+        return "power"
+    if a in (3, 5):
+        return "pressure"
+    if a == 1:
+        return "power" if t == 4 else "pressure" if t == 5 else "neutral"
+    return "neutral"
 
 
 class DailyEventsRequest(BaseModel):
@@ -428,7 +448,21 @@ def daily_events(
     if not time_known:
         natal_lons.pop(2, None)  # kural 10: saatsiz profilde natal Ay hedef olamaz
     locale = payload.locale if payload.locale in DAILY_LOCALES else "en"
-    events = compute_daily_events(natal_lons, event_date, tz_name="UTC", top_n=5)
+    all_events = compute_daily_events(natal_lons, event_date, tz_name="UTC", top_n=1000)
+    events = all_events[:5]
+    categories = []
+    for theme_id in (1, 2, 3, 4):
+        ev = [e for e in all_events if THEME_BY_NATAL.get(e["natal_body_id"]) == theme_id]
+        if not ev:
+            categories.append({"theme_id": theme_id, "level": "neutral", "score": 0, "percentile": 0})
+            continue
+        pct = _score_percentile(ev[0]["score"])
+        categories.append({
+            "theme_id": theme_id,
+            "level": _valence(ev[0]) if pct > 70 else "neutral",
+            "score": ev[0]["score"],
+            "percentile": pct,
+        })
     tpl_rows = _supabase_get(
         "snippet_templates",
         {
@@ -444,7 +478,7 @@ def daily_events(
         by_key.setdefault(k, []).append(r)
     
     for event in events:
-        event["theme"] =  THEME_BY_NATAL.get(event["natal_body_id"])
+        event["theme_id"] = THEME_BY_NATAL.get(event["natal_body_id"])
         group = sorted(
             by_key.get(
                 (event["transit_body_id"], event["aspect_type_id"], event["natal_body_id"]),
@@ -461,4 +495,5 @@ def daily_events(
         "time_known": time_known,
         "engine_version": "transit-v1",
         "events": events,
+        "categories": categories,
     })
