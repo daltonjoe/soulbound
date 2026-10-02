@@ -207,12 +207,35 @@ DAILY_LOCALES = {"en", "de", "tr", "fr", "es", "pt", "it"}
 # K5: natal noktaya göre tema (Mars→health). Kod döner; ID eşlemesi sonra [?]
 # K5: natal noktaya göre theme_id (1 love, 2 career, 3 identity, 4 health)
 THEME_BY_NATAL = {1: 3, 2: 3, 3: 2, 4: 1, 5: 4, 6: 2, 7: 2, 8: 3, 9: 1, 10: 3}
-# Sabit referans yüzdelik (M1'de ref_distributions'a taşınacak) [?]
-_PCT_POINTS = [(0.0, 0), (0.18, 30), (0.255, 50), (0.343, 70), (0.501, 90), (1.15, 100)]
+# Yüzdelik noktaları: ref_distributions (v2/event_score); hata→gömülü yedek
+_PCT_FALLBACK = [(0.0, 0), (0.18, 30), (0.255, 50), (0.343, 70), (0.501, 90), (1.15, 100)]
+_PCT_CACHE = {"pts": None, "ts": 0.0}
 
 
-def _score_percentile(score):
-    for (x0, y0), (x1, y1) in zip(_PCT_POINTS, _PCT_POINTS[1:]):
+def _pct_points(access_token=None):
+    import time
+    if _PCT_CACHE["pts"] and time.time() - _PCT_CACHE["ts"] < 3600:
+        return _PCT_CACHE["pts"]
+    pts = _PCT_FALLBACK
+    if access_token:
+        try:
+            rows = _supabase_get(
+                "ref_distributions",
+                {"select": "percentile,value", "engine_version": "eq.v2",
+                 "metric": "eq.event_score", "order": "percentile.asc"},
+                access_token,
+            )
+            if len(rows) == 4:
+                pts = [(0.0, 0)] + [(float(r["value"]), int(r["percentile"])) for r in rows] + [(1.15, 100)]
+                _PCT_CACHE["pts"], _PCT_CACHE["ts"] = pts, time.time()
+        except Exception:
+            pass
+    return pts
+
+
+def _score_percentile(score, pts=None):
+    pts = pts or _PCT_FALLBACK
+    for (x0, y0), (x1, y1) in zip(pts, pts[1:]):
         if score <= x1:
             return round(y0 + (y1 - y0) * (score - x0) / (x1 - x0))
     return 100
