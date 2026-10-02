@@ -489,11 +489,41 @@ def daily_events(
         event["template_id"] = (
             group[event_date.toordinal() % len(group)]["id"] if group else None
         )
+    headline = None
+    if events:
+        top = events[0]
+        text = notif = None
+        if top["template_id"] is not None:
+            tr_rows = _supabase_get(
+                "snippet_translations",
+                {
+                    "select": "locale,body,notification",
+                    "template_id": f"eq.{top['template_id']}",
+                    "locale": f"in.({locale},en)",
+                },
+                access_token,
+            )
+            tr = {r["locale"]: r for r in tr_rows}
+            row = tr.get(locale) or tr.get("en")
+            if row:
+                text, notif = row.get("body"), row.get("notification")
+        headline = {
+            "template_id": top["template_id"],
+            "tag": {
+                "transit": top["transit_body_id"],
+                "aspect": top["aspect_type_id"],
+                "natal": top["natal_body_id"],
+            },
+            "text": text,
+            "notification": notif,
+        }
     return UTF8JSONResponse(content={
         "date": payload.date,
         "locale": locale,
         "time_known": time_known,
         "engine_version": "transit-v1",
+        "headline": headline,
         "events": events,
         "categories": categories,
+        "rarity": {"event_rate_pct": None},
     })
