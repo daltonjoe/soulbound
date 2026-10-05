@@ -9,7 +9,19 @@ import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
+import pytest
 from module1_engine import calculate_natal_chart, build_full_chart, to_json
+
+@pytest.fixture
+def chart():
+    return calculate_natal_chart(
+        year=1998, month=11, day=23, hour=8, minute=30,
+        city="Konya, Turkey"
+    )
+
+@pytest.fixture
+def full_chart(chart):
+    return build_full_chart(chart)
 
 def test_basic_chart():
     print("=" * 60)

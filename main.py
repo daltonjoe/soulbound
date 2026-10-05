@@ -258,6 +258,7 @@ class DailyEventsRequest(BaseModel):
     profile_id: UUID
     date: str
     locale: str = "en"
+    timezone: Optional[str] = None  # bilgi amaçlı; hesapta kullanılmaz (UTC öğle)
 
 # ─── Health Check ─────────────────────────────────────────────────────────────
 
@@ -479,7 +480,7 @@ def daily_events(
         if not ev:
             categories.append({"theme_id": theme_id, "level": "neutral", "score": 0, "percentile": 0})
             continue
-        pct = _score_percentile(ev[0]["score"])
+        pct = _score_percentile(ev[0]["score"], _pct_points(access_token))
         categories.append({
             "theme_id": theme_id,
             "level": _valence(ev[0]) if pct > 70 else "neutral",
