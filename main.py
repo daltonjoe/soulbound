@@ -411,6 +411,69 @@ def _supabase_get(table: str, params: dict, access_token: str) -> list:
         )
     return response.json()
 
+class SynastryRequest(BaseModel):
+    profile_a: str
+    profile_b: str
+
+
+_SYN_ASPECTS = {1: (0.0, 8.0), 2: (60.0, 6.0), 3: (90.0, 8.0), 4: (120.0, 8.0), 5: (180.0, 8.0)}
+
+
+@app.post("/synastry")
+@limiter.limit("20/minute")
+def synastry(
+    request: Request,
+    payload: SynastryRequest,
+    user_id: str = Depends(get_user_id),
+):
+    if payload.profile_a == payload.profile_b:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Profiles must differ.")
+    credentials = request.headers.get("Authorization", "")
+    access_token = credentials[7:].strip() if credentials.startswith("Bearer ") else ""
+    ids = [payload.profile_a, payload.profile_b]
+    profiles = _supabase_get(
+        "user_profiles",
+        {"select": "id,user_id,birth_time_known", "id": "in.(" + ",".join(ids) + ")"},
+        access_token,
+    )
+    by_id = {str(p["id"]): p for p in profiles}
+    if len(by_id) != 2 or any(str(p.get("user_id")) != user_id for p in by_id.values()):
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Profile not found.")
+    rows = _supabase_get(
+        "user_chart_placements",
+        {"select": "profile_id,planet_id,longitude_degree", "profile_id": "in.(" + ",".join(ids) + ")"},
+        access_token,
+    )
+    lons = {pid: {} for pid in ids}
+    for r in rows:
+        pid = str(r.get("profile_id"))
+        if pid in lons and r.get("planet_id") is not None and r.get("longitude_degree") is not None:
+            b = int(r["planet_id"])
+            if 1 <= b <= 10:
+                lons[pid][b] = float(r["longitude_degree"])
+    known = {pid: by_id[pid].get("birth_time_known") is not False for pid in ids}
+    for pid in ids:
+        if not known[pid]:
+            lons[pid].pop(2, None)  # kural 10: saatsiz profilde Ay yok
+    out = []
+    for ba, la in lons[ids[0]].items():
+        for bb, lb in lons[ids[1]].items():
+            d = abs(la - lb) % 360.0
+            if d > 180.0:
+                d = 360.0 - d
+            for at_id, (angle, max_orb) in _SYN_ASPECTS.items():
+                orb = abs(d - angle)
+                if orb <= max_orb:
+                    out.append({
+                        "body_a_id": ba, "body_b_id": bb, "aspect_type_id": at_id,
+                        "orb": round(orb, 4), "tightness": round(orb / max_orb, 4),
+                    })
+    out.sort(key=lambda x: x["tightness"])
+    return {
+        "profile_a": ids[0], "profile_b": ids[1],
+        "time_known_a": known[ids[0]], "time_known_b": known[ids[1]],
+        "aspects": out,
+    }
 
 @app.post("/daily-events")
 @limiter.limit("30/minute")
