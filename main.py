@@ -21,7 +21,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from dotenv import load_dotenv
-from typing import Optional, Any
+from typing import Optional, Any, List
 from datetime import datetime
 from uuid import UUID
 import requests
@@ -32,6 +32,7 @@ from astro_integration.core.forecast_service import generate_forecast, VALID_TYP
 from astro_integration.core.prompt_loader import get_period_label
 from astro_integration.core.auth import verify_token, get_user_id, create_app_token
 from module1_engine.transit_engine import compute_daily_events
+import ask_logic
 
 load_dotenv()
 
@@ -474,6 +475,38 @@ def synastry(
         "time_known_a": known[ids[0]], "time_known_b": known[ids[1]],
         "aspects": out,
     }
+class AskContextIn(BaseModel):
+    type: str
+    refs: dict = {}
+
+
+class AskHistoryIn(BaseModel):
+    role: str
+    text: str
+
+
+class AskRequest(BaseModel):
+    message: str
+    contexts: List[AskContextIn] = []
+    locale: str = "en"
+    history: List[AskHistoryIn] = []
+
+
+@app.post("/ask")
+@limiter.limit("20/minute")
+def ask(request: Request, payload: AskRequest, user_id: str = Depends(get_user_id)):
+    credentials = request.headers.get("Authorization", "")
+    access_token = credentials[7:].strip() if credentials.startswith("Bearer ") else ""
+    try:
+        result = ask_logic.answer(payload.dict(), user_id, access_token, _supabase_get)
+    except ValueError:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Bad request.")
+    except LookupError:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Profile not found.")
+    except RuntimeError as e:
+        print("[ask] error=%s" % e)
+        raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail="Upstream error.")
+    return UTF8JSONResponse(content=result)
 
 @app.post("/daily-events")
 @limiter.limit("30/minute")
