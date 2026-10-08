@@ -32,6 +32,25 @@ _REDIRECT = (
     "farmaco", "causa legale", "morirò", "incinta", "quali azioni",
 )
 
+_REDIRECT_EXTRA = (
+    # tr
+    "kanser", "ilacı", "ilaçları", "dava", "kazanır mıyım", "öleceğim", "ne zaman öl",
+    "hastalık", "tedavi", "borsa", "yatırım", "boşanma davası",
+    # en
+    "do i have cancer", "have cancer", "stop my medication", "will i win", "when will i die",
+    "should i invest", "my lawsuit", "am i sick",
+    # de
+    "habe ich krebs", "absetzen", "wann werde ich sterben", "prozess gewinn",
+    # fr
+    "ai-je un cancer", "j'ai un cancer", "traitement", "mourir", "gagner mon procès",
+    # es
+    "tengo cáncer", "medicación", "cuándo voy a morir", "ganaré mi", "qué acción",
+    # pt
+    "tenho câncer", "tenho cancer", "remédio", "quando vou morrer", "ganhar o processo",
+    # it
+    "ho un cancro", "ho un tumore", "smettere la cura", "quando morirò", "vincerò la causa",
+)
+
 _NAMES: Dict[str, Any] = {}
 
 
@@ -39,7 +58,7 @@ def _safety(text: str) -> Optional[str]:
     t = text.lower()
     if any(k in t for k in _CRISIS):
         return "crisis"
-    if any(k in t for k in _REDIRECT):
+    if any(k in t for k in _REDIRECT + _REDIRECT_EXTRA):
         return "redirect"
     return None
 
