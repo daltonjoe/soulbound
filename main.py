@@ -490,6 +490,7 @@ class AskRequest(BaseModel):
     contexts: List[AskContextIn] = []
     locale: str = "en"
     history: List[AskHistoryIn] = []
+    profile_id: str = ""
 
 
 @app.post("/ask")
@@ -505,6 +506,8 @@ def ask(request: Request, payload: AskRequest, user_id: str = Depends(get_user_i
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Profile not found.")
     except RuntimeError as e:
         print("[ask] error=%s" % e)
+        if str(e) == "ask_429":
+            raise HTTPException(status_code=status.HTTP_429_TOO_MANY_REQUESTS, detail="Busy.")
         raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail="Upstream error.")
     return UTF8JSONResponse(content=result)
 
