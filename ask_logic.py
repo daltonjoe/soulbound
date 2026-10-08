@@ -143,20 +143,24 @@ def _context(ctxs, known, sb, token, loc, n):
             h = _int(pr[0].get("house_id"), 1, 12) if kn else None
             pc = []
             for hf in ([{"house_id": "eq.%d" % h}] if h else []) + [{"house_id": "is.null"}]:
-                q = {"select": "locale,title,short_description", "planet_id": "eq.%d" % b,
-  "sign_id": "eq.%d" % s, "is_active": "eq.true", "theme_id": "eq.3",
+                q = {"select": "locale,theme_id,title,short_description", "planet_id": "eq.%d" % b,  "sign_id": "eq.%d" % s, "is_active": "eq.true",
                      "locale": "in.(%s,en)" % loc}                
                 q.update(hf)
                 pc = sb("placement_content", q, token)
                 if pc:
                     break
-            by = {x["locale"]: x for x in pc}
-            row = by.get(loc) or by.get("en") or {}
+            rws = [x for x in pc if x["locale"] == loc] or [x for x in pc if x["locale"] == "en"]
+            seen, parts = set(), []
+            for x in rws:
+                if x.get("theme_id") in seen:
+                    continue
+                seen.add(x.get("theme_id"))
+                parts.append(" ".join(y for y in (x.get("title"), x.get("short_description")) if y))
             sgn = n["signmap"].get((s, loc)) or n["signmap"].get((s, "en")) or str(s)
             line = "- natal placement asked about: %s in %s" % (_nm(n["bodies"], b, loc), sgn)
             if h:
                 line += ", house %d" % h
-            txt = " ".join(x for x in (row.get("title"), row.get("short_description")) if x)
+            txt = " | ".join(p for p in parts[:4] if p)
             if txt:
                 line += "\n  approved text: " + txt
             lines.append(line)
