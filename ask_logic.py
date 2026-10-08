@@ -151,8 +151,37 @@ def _deg(lon: float) -> str:
     d = lon % 30
     return "%d°%02d'" % (int(d), int((d - int(d)) * 60))
 
+def _month_events(lons, ym: str):
+    import calendar as _cal
+    from datetime import date as _date
+    y, m = int(ym[:4]), int(ym[5:7])
+    last = _cal.monthrange(y, m)[1]
+    slow_days = set(range(1, last + 1, 3)) | {last}
+    slow: Dict[Any, int] = {}
+    fast: Dict[Any, int] = {}
+    for d in range(1, last + 1):
+        try:
+            evs = compute_daily_events(lons, _date(y, m, d), tz_name="UTC", top_n=1000)
+        except Exception as e:
+            print("[ask] month_err=%s" % type(e).__name__)
+            continue
+        for e in evs:
+            tb = int(e["transit_body_id"])
+            if tb == 2:
+                continue
+            k = (tb, int(e["aspect_type_id"]), int(e["natal_body_id"]))
+            if tb >= 5:
+                if d in slow_days:
+                    slow[k] = slow.get(k, 0) + 1
+            else:
+                fast[k] = fast.get(k, 0) + 1
+    out = (sorted(slow.items(), key=lambda kv: -kv[1])[:8]
+           + sorted(fast.items(), key=lambda kv: -kv[1])[:4])
+    print("[ask] month=%s events=%d slow=%d fast=%d" % (
+        ym, len(out), min(len(slow), 8), min(len(fast), 4)))
+    return out
 
-def _chart(pid: str, user_id: str, sb: Callable, token: str, loc: str, n: Dict[str, Any]):
+def _chart(pid: str, user_id: str, sb: Callable, token: str, loc: str, n: Dict[str, Any], month: str = ""):
     """Profilin tam natal haritası + bugünkü transitler, yalnız DB kodlarından (K23)."""
     pid = str(uuid.UUID(str(pid)))  # geçersiz → ValueError → 400
     prof = sb("user_profiles", {
@@ -220,6 +249,14 @@ def _chart(pid: str, user_id: str, sb: Callable, token: str, loc: str, n: Dict[s
             _nm(n["bodies"], int(a["planet_a_id"]), loc),
             _nm(n["aspects"], int(a["aspect_type_id"]), loc),
             _nm(n["bodies"], int(a["planet_b_id"]), loc), o))
+    if lons and month:
+        lines.append("- outlook month: %s-%s" % (month[5:7], month[:4]))
+        for (tb, at, nb), cnt in _month_events(lons, month):
+            bodies.update((tb, nb))
+            lines.append("- transit month: %s %s natal %s" % (
+                _nm(n["bodies"], tb, loc), _nm(n["aspects"], at, loc),
+                _nm(n["bodies"], nb, loc)))
+        return lines, bodies, signs
     if lons:
         try:
             evs = compute_daily_events(lons, datetime.utcnow().date(),
@@ -294,7 +331,7 @@ def _keys() -> List[str]:
         if k.strip().strip('"').strip("'")]
 
 
-def _gemini(system: str, history: List[Dict], message: str) -> str:
+def _gemini(system: str, history: List[Dict], message: str, deadline: float) -> str:
     keys = _keys()
     if not keys:
         raise RuntimeError("no_key")
@@ -316,29 +353,37 @@ def _gemini(system: str, history: List[Dict], message: str) -> str:
         _KEY_RR[0] = (start + 1) % len(keys)
     order = [(start + i) % len(keys) for i in range(len(keys))]
     now = time.time()
-    ready = [i for i in order if _KEY_COOL.get(i, 0) <= now] or order
+    ready = [i for i in order if _KEY_COOL.get(i, 0) <= now]
+    if not ready:
+        print("[ask] prov=gemini cooldown=all")
+        raise RuntimeError("gemini_cool")
     r = None
     last = 0
     for i in ready:
+        left = deadline - time.time()
+        if left < 3:
+            break
         url = ("https://generativelanguage.googleapis.com/v1beta/models/"
                "gemini-3.6-flash:generateContent?key=" + keys[i])
         try:
-            r = requests.post(url, json=payload, timeout=30,
+            r = requests.post(url, json=payload, timeout=(5, min(left, 18)),
                               headers={"Content-Type": "application/json;charset=utf-8"})
         except requests.RequestException as e:
-            print("[ask] key=%d net=%s" % (i, type(e).__name__))
+            print("[ask] prov=gemini key=%d net=%s" % (i, type(e).__name__))
             last = 0
             r = None
-            continue
+            break
         last = r.status_code
+        print("[ask] prov=gemini key=%d status=%d" % (i, last))
         if last == 200:
             break
-        print("[ask] key=%d status=%d" % (i, last))
         if last == 429:
             _KEY_COOL[i] = time.time() + 60
         elif last in (400, 401, 403):
             _KEY_COOL[i] = time.time() + 300
         r = None
+        if last >= 500:
+            break
     if r is None:
         raise RuntimeError("gemini_%d" % last if last else "gemini_net")
     cands = r.json().get("candidates") or []
@@ -374,7 +419,7 @@ def _env_keys(names) -> List[str]:
 
 
 def _openai(name: str, url: str, keys: List[str], model: str, system: str,
-            history: List[Dict], message: str) -> str:
+            history: List[Dict], message: str, deadline: float) -> str:
     msgs = [{"role": "system", "content": system}]
     for h in history[-6:]:
         role = "assistant" if h.get("role") == "assistant" else "user"
@@ -384,62 +429,93 @@ def _openai(name: str, url: str, keys: List[str], model: str, system: str,
     msgs.append({"role": "user",
                  "content": "<user_message>%s</user_message>" % message})
     payload = {"model": model, "messages": msgs,
-               "temperature": 0.7, "max_tokens": 1024}
+               "temperature": 0.7, "max_tokens": 2048}
+    if "gpt-oss" in model:
+        payload["reasoning_effort"] = "low"
     with _KEY_LOCK:
         start = _PRR.get(name, 0) % len(keys)
         _PRR[name] = (start + 1) % len(keys)
     order = [(start + i) % len(keys) for i in range(len(keys))]
     now = time.time()
-    ready = [i for i in order if _PCOOL.get((name, i), 0) <= now] or order
+    ready = [i for i in order if _PCOOL.get((name, i), 0) <= now]
+    if not ready:
+        print("[ask] prov=%s cooldown=all" % name)
+        raise RuntimeError("%s_cool" % name)
     last = 0
     for i in ready:
+        left = deadline - time.time()
+        if left < 3:
+            break
         try:
             r = requests.post(
-                url, json=payload, timeout=30,
+                url, json=payload, timeout=(5, min(left, 20)),
                 headers={"Authorization": "Bearer " + keys[i],
                          "Content-Type": "application/json",
                          "User-Agent": "SoulBound/1.0"})
         except requests.RequestException as e:
             print("[ask] prov=%s key=%d net=%s" % (name, i, type(e).__name__))
             last = 0
-            continue
+            break
         last = r.status_code
-        print("[ask] prov=%s key=%d status=%d" % (name, i, last))
+        print("[ask] prov=%s key=%d status=%d rem_req=%s rem_tok=%s" % (
+            name, i, last,
+            r.headers.get("x-ratelimit-remaining-requests", "-"),
+            r.headers.get("x-ratelimit-remaining-tokens", "-")))
         if last == 200:
+            fin = "-"
             try:
                 ch = r.json().get("choices") or []
                 txt = ((ch[0].get("message") or {}).get("content") or "") if ch else ""
+                fin = (ch[0].get("finish_reason") or "-") if ch else "-"
             except ValueError:
                 last = 502
-                continue
-            txt = re.sub(r"<think>.*?</think>", "", txt, flags=re.S)
-            return txt.strip()
+                break
+            txt = re.sub(r"<think>.*?</think>", "", txt, flags=re.S).strip()
+            if not txt:
+                print("[ask] prov=%s empty finish=%s" % (name, fin))
+            return txt
         if last == 429:
-            _PCOOL[(name, i)] = time.time() + 60
+            try:
+                ra = float(r.headers.get("retry-after", 60))
+            except ValueError:
+                ra = 60.0
+            _PCOOL[(name, i)] = time.time() + min(max(ra, 30.0), 3600.0)
         elif last in (400, 401, 403):
             _PCOOL[(name, i)] = time.time() + 300
+        elif last >= 500:
+            break
     raise RuntimeError("%s_%d" % (name, last) if last else "%s_net" % name)
 
 
 def _generate(system: str, history: List[Dict], message: str) -> str:
+    deadline = time.time() + 40
     errs: List[str] = []
-    for attempt in range(2):
-        try:
-            return _gemini(system, history, message)
-        except RuntimeError as e:
-            errs.append(str(e))
-            if str(e) != "gemini_503":
-                break
-            time.sleep(0.8)
+    try:
+        txt = _gemini(system, history, message, deadline)
+        if txt:
+            return txt
+        print("[ask] prov=gemini empty")
+        errs.append("gemini_empty")
+    except RuntimeError as e:
+        errs.append(str(e))
     for name, url, envs, menv in _PROV:
+        if deadline - time.time() < 4:
+            print("[ask] budget=exhausted")
+            break
         keys = _env_keys(envs)
         model = os.getenv(menv, "").strip()
         if not keys or not model:
+            print("[ask] prov=%s skip keys=%d model=%d" % (
+                name, len(keys), 1 if model else 0))
             continue
         try:
-            return _openai(name, url, keys, model, system, history, message)
+            txt = _openai(name, url, keys, model, system, history, message, deadline)
+            if txt:
+                return txt
+            errs.append("%s_empty" % name)
         except RuntimeError as e:
             errs.append(str(e))
+    print("[ask] chain=failed errs=%s" % ",".join(errs))
     if any(e.endswith("_429") for e in errs):
         raise RuntimeError("ask_429")
     raise RuntimeError(errs[-1] if errs else "no_provider")
@@ -459,15 +535,24 @@ def answer(p: Dict[str, Any], user_id: str, token: str, sb: Callable) -> Dict[st
     n = _names(sb, token)
     lines, allowed, signs = [], set(), set()
     if p.get("profile_id"):
-        cl, cb, cs = _chart(str(p["profile_id"]), user_id, sb, token, loc, n)
+        fm = str(p.get("forecast_month") or "")
+        month = fm if (mode == "forecast" and re.match(r"^20\d{2}-(0[1-9]|1[0-2])$", fm)) else ""
+        cl, cb, cs = _chart(str(p["profile_id"]), user_id, sb, token, loc, n, month)
         lines, allowed, signs = cl, set(cb), set(cs)
-        if mode == "forecast":
+        if mode == "forecast" and not month:
             lines = [x for x in lines if "transit today" in x]
     ll, la = _context(ctxs, known, sb, token, loc, n)
     lines += ll
     allowed |= la
     reply = _generate(_system(loc, lines, mode), p.get("history") or [], msg)
-    if not reply or not _valid(reply, allowed, n, signs):
-        print("[ask] safety=fallback")
+    why = "ok"
+    if not reply:
+        why = "empty"
+    elif len(reply.split()) > 200:
+        why = "long"
+    elif not _valid(reply, allowed, n, signs):
+        why = "validator"
+    if why != "ok":
+        print("[ask] safety=fallback why=%s" % why)
         return {"reply": None, "safety": "fallback"}
     return {"reply": reply, "safety": None}

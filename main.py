@@ -492,6 +492,7 @@ class AskRequest(BaseModel):
     history: List[AskHistoryIn] = []
     profile_id: str = ""
     mode: str = "natal"
+    forecast_month: str = ""
 
 
 @app.post("/ask")
