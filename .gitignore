@@ -22,3 +22,6 @@ supabase/.temp/
 
 test_output.json
 test_synastry.py
+
+*.bak*
+test_ask.py
