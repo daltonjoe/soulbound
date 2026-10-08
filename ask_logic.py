@@ -144,7 +144,8 @@ def _context(ctxs, known, sb, token, loc, n):
             pc = []
             for hf in ([{"house_id": "eq.%d" % h}] if h else []) + [{"house_id": "is.null"}]:
                 q = {"select": "locale,title,short_description", "planet_id": "eq.%d" % b,
-                     "sign_id": "eq.%d" % s, "is_active": "eq.true", "locale": "in.(%s,en)" % loc}
+  "sign_id": "eq.%d" % s, "is_active": "eq.true", "theme_id": "eq.3",
+                     "locale": "in.(%s,en)" % loc}                
                 q.update(hf)
                 pc = sb("placement_content", q, token)
                 if pc:
