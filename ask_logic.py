@@ -130,6 +130,37 @@ def _context(ctxs, known, sb, token, loc, n):
     lines, allowed = [], set()
     for c in ctxs[:5]:
         t, r = c.get("type"), c.get("refs") or {}
+        if t == "natal_placement":
+            pid, b = str(r.get("profile_id")), _int(r.get("planet_id"), 1, 10)
+            kn = known.get(pid)
+            if b is None or kn is None or (kn is False and b == 2):
+                continue  # sahiplik yok / saatsizde natal Ay yok (kural 10)
+            pr = sb("user_chart_placements", {"select": "sign_id,house_id",
+                    "profile_id": "eq." + pid, "planet_id": "eq.%d" % b}, token)
+            s = _int(pr[0].get("sign_id"), 1, 12) if pr else None
+            if s is None:
+                continue
+            h = _int(pr[0].get("house_id"), 1, 12) if kn else None
+            pc = []
+            for hf in ([{"house_id": "eq.%d" % h}] if h else []) + [{"house_id": "is.null"}]:
+                q = {"select": "locale,title,short_description", "planet_id": "eq.%d" % b,
+                     "sign_id": "eq.%d" % s, "is_active": "eq.true", "locale": "in.(%s,en)" % loc}
+                q.update(hf)
+                pc = sb("placement_content", q, token)
+                if pc:
+                    break
+            by = {x["locale"]: x for x in pc}
+            row = by.get(loc) or by.get("en") or {}
+            sgn = n["signmap"].get((s, loc)) or n["signmap"].get((s, "en")) or str(s)
+            line = "- natal placement asked about: %s in %s" % (_nm(n["bodies"], b, loc), sgn)
+            if h:
+                line += ", house %d" % h
+            txt = " ".join(x for x in (row.get("title"), row.get("short_description")) if x)
+            if txt:
+                line += "\n  approved text: " + txt
+            lines.append(line)
+            allowed.add(b)
+            continue
         asp = _int(r.get("aspect_type_id"), 1, 5)
         if asp is None:
             continue
