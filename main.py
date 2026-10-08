@@ -491,6 +491,7 @@ class AskRequest(BaseModel):
     locale: str = "en"
     history: List[AskHistoryIn] = []
     profile_id: str = ""
+    mode: str = "natal"
 
 
 @app.post("/ask")
